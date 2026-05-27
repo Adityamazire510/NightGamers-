@@ -1,0 +1,2120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NightGamers — Physical PC Game Store</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#050810;--bg2:#080d1a;--surf:#0d1526;--surf2:#111d35;
+  --a:#00e5ff;--a2:#ff2d78;--a3:#7b2fff;
+  --tx:#e8f0ff;--tx2:#8a99bb;
+  --br:rgba(0,229,255,0.12);
+  --glow:0 0 30px rgba(0,229,255,0.25);
+  --glow2:0 0 30px rgba(255,45,120,0.25);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--tx);font-family:'Rajdhani',sans-serif;font-size:16px;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,229,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.025) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+nav{position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:0 5vw;height:64px;background:rgba(5,8,16,.93);backdrop-filter:blur(20px);border-bottom:1px solid var(--br)}
+.logo{display:inline-flex;align-items:center;gap:10px;cursor:pointer;text-decoration:none;flex-shrink:0}
+.logo-mark{width:36px;height:36px;flex-shrink:0;filter:drop-shadow(0 0 8px rgba(139,92,246,.8));transition:filter .3s,transform .3s}
+.logo:hover .logo-mark{filter:drop-shadow(0 0 14px rgba(139,92,246,1)) drop-shadow(0 0 6px rgba(0,229,255,.6));transform:rotate(-8deg) scale(1.1)}
+.logo:hover .logo-main{animation:logoglitch .4s steps(2) both}
+@keyframes logoglitch{0%{text-shadow:2px 0 #ff2d78,-2px 0 #00e5ff}25%{text-shadow:-2px 0 #ff2d78,2px 0 #00e5ff}50%{text-shadow:2px 0 #a78bfa,-2px 0 #00ff88}75%{text-shadow:-1px 0 #ff2d78,1px 0 #00e5ff}100%{text-shadow:none}}
+.logo-text{display:flex;flex-direction:column;line-height:1}
+.logo-main{font-family:'Bebas Neue',sans-serif;font-size:1.45rem;letter-spacing:5px;background:linear-gradient(90deg,#a78bfa 0%,#00e5ff 60%,#ff2d78 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-shadow:none}
+.logo-sub{font-family:'Share Tech Mono',monospace;font-size:.42rem;letter-spacing:4px;color:rgba(139,92,246,.7);text-transform:uppercase;margin-top:1px}
+nav ul{display:flex;gap:2rem;list-style:none}
+nav ul a{font-family:'Share Tech Mono',monospace;font-size:.78rem;letter-spacing:2px;color:var(--tx2);text-decoration:none;text-transform:uppercase;transition:color .2s;cursor:pointer}
+nav ul a:hover,nav ul a.active{color:var(--a)}
+.nav-r{display:flex;gap:1rem;align-items:center}
+.cart-btn{background:transparent;border:1px solid var(--a);color:var(--a);font-family:'Share Tech Mono',monospace;font-size:.75rem;letter-spacing:2px;padding:8px 18px;cursor:pointer;text-transform:uppercase;transition:all .2s;position:relative}
+.cart-btn:hover{background:var(--a);color:var(--bg);box-shadow:var(--glow)}
+.cn{position:absolute;top:-8px;right:-8px;background:var(--a2);color:#fff;font-size:.62rem;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.hburg{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px}
+.hburg span{display:block;width:24px;height:2px;background:var(--a)}
+.mobn{display:none;position:fixed;top:64px;left:0;right:0;background:rgba(5,8,16,.98);backdrop-filter:blur(20px);border-bottom:1px solid var(--br);padding:1.5rem 5vw;z-index:199;flex-direction:column;gap:1.5rem}
+.mobn.open{display:flex}
+.mobn a{font-family:'Share Tech Mono',monospace;font-size:.85rem;letter-spacing:2px;color:var(--tx2);text-transform:uppercase;padding:8px 0;border-bottom:1px solid var(--br);cursor:pointer}
+/* PAGE TRANSITIONS */
+#app{position:relative}
+.page{display:none;opacity:0;pointer-events:none}
+.page.active{display:block;opacity:1;pointer-events:all}
+.page.pin-r{display:block;animation:pinR .55s cubic-bezier(.22,1,.36,1) both}
+.page.pin-l{display:block;animation:pinL .55s cubic-bezier(.22,1,.36,1) both}
+.page.pout-l{display:block;animation:poutL .35s cubic-bezier(.55,0,1,.45) both;pointer-events:none}
+.page.pout-r{display:block;animation:poutR .35s cubic-bezier(.55,0,1,.45) both;pointer-events:none}
+@keyframes pinR{from{opacity:0;transform:translateX(70px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes pinL{from{opacity:0;transform:translateX(-70px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes poutL{from{opacity:1;transform:none}to{opacity:0;transform:translateX(-60px) scale(.96)}}
+@keyframes poutR{from{opacity:1;transform:none}to{opacity:0;transform:translateX(60px) scale(.96)}}
+#tOvl{position:fixed;inset:0;z-index:500;pointer-events:none;opacity:0;transform:scaleX(0);transform-origin:left}
+#tOvl.wi{animation:wi .28s cubic-bezier(.76,0,.24,1) forwards}
+#tOvl.wo{animation:wo .32s cubic-bezier(.76,0,.24,1) forwards}
+@keyframes wi{0%{opacity:.18;transform:scaleX(0);transform-origin:left}100%{opacity:.18;transform:scaleX(1);transform-origin:left}}
+@keyframes wo{0%{opacity:.18;transform:scaleX(1);transform-origin:right}100%{opacity:0;transform:scaleX(0);transform-origin:right}}
+/* HERO */
+.hero{position:relative;min-height:88vh;display:flex;align-items:center;padding:6rem 5vw 4rem;overflow:hidden}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 60% 60% at 70% 50%,rgba(123,47,255,.18) 0%,transparent 70%),radial-gradient(ellipse 40% 40% at 20% 80%,rgba(0,229,255,.1) 0%,transparent 60%);pointer-events:none}
+.hero-c{position:relative;z-index:1;max-width:560px;animation:fup .8s ease both}
+.htag{font-family:'Share Tech Mono',monospace;font-size:.72rem;letter-spacing:4px;color:var(--a2);text-transform:uppercase;margin-bottom:1rem;display:flex;align-items:center;gap:8px}
+.htag::before{content:'';width:28px;height:1px;background:var(--a2);display:inline-block}
+.hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(3.5rem,8vw,6.5rem);line-height:.92;letter-spacing:2px;margin-bottom:1.5rem}
+.hero h1 .hl{color:var(--a);text-shadow:0 0 40px var(--a)}
+.hero p{font-size:1.1rem;color:var(--tx2);line-height:1.7;margin-bottom:2.5rem;max-width:420px}
+.hcta{display:flex;gap:1rem;flex-wrap:wrap}
+.bp{background:var(--a);color:var(--bg);font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:3px;padding:14px 36px;border:none;cursor:pointer;text-transform:uppercase;transition:all .2s;display:inline-block;clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px))}
+.bp:hover{box-shadow:var(--glow);transform:translateY(-2px)}
+.bo{background:transparent;color:var(--tx);font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:3px;padding:13px 36px;border:1px solid rgba(255,255,255,.2);cursor:pointer;text-transform:uppercase;transition:all .2s;display:inline-block;clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px))}
+.bo:hover{border-color:var(--a);color:var(--a)}
+.hero-vis{position:absolute;right:0;top:50%;transform:translateY(-50%);width:50%;max-width:600px;pointer-events:none;display:flex;align-items:center;justify-content:center;animation:fin 1.2s ease both .3s}
+.cd{width:min(380px,44vw);height:min(380px,44vw);border-radius:50%;background:conic-gradient(from 0deg,#1a0a2e,#0d1526,#0a1a2e,#1a0a2e,#000820,#1a0a2e,#0d1526,#0a1a2e);position:relative;animation:spin 8s linear infinite;box-shadow:0 0 60px rgba(0,229,255,.2),0 0 120px rgba(123,47,255,.1),inset 0 0 40px rgba(0,0,0,.5)}
+.cd::before{content:'';position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,rgba(0,229,255,.4),rgba(255,45,120,.3),rgba(123,47,255,.4),rgba(0,229,255,.2),rgba(255,200,0,.2),rgba(0,229,255,.4));mix-blend-mode:screen}
+.cd::after{content:'';position:absolute;inset:18%;border-radius:50%;background:var(--bg)}
+.cd-c{position:absolute;width:14%;height:14%;border-radius:50%;background:var(--a);z-index:2;box-shadow:0 0 20px var(--a);top:50%;left:50%;transform:translate(-50%,-50%)}
+.cd-r{position:absolute;border-radius:50%;border:1px solid rgba(0,229,255,.15);top:50%;left:50%;transform:translate(-50%,-50%)}
+.cd-r:nth-child(1){width:50%;height:50%}.cd-r:nth-child(2){width:30%;height:30%}.cd-r:nth-child(3){width:70%;height:70%}
+/* STATS */
+.sbar{position:relative;z-index:1;display:flex;padding:1.5rem 5vw;border-top:1px solid var(--br);border-bottom:1px solid var(--br);background:rgba(13,21,38,.5);overflow-x:auto}
+.si{flex:1;min-width:90px;text-align:center;padding:1rem;border-right:1px solid var(--br)}.si:last-child{border-right:none}
+.sn{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--a);line-height:1}
+.slb{font-family:'Share Tech Mono',monospace;font-size:.6rem;letter-spacing:2px;color:var(--tx2);text-transform:uppercase;margin-top:4px}
+/* SECTION */
+section{position:relative;z-index:1;padding:5rem 5vw}
+.sh{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:3rem;gap:1rem;flex-wrap:wrap}
+.st{font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,4vw,3rem);letter-spacing:3px;line-height:1}
+.st span{color:var(--a);text-shadow:0 0 20px rgba(0,229,255,.4)}
+.ss{font-family:'Share Tech Mono',monospace;font-size:.7rem;letter-spacing:3px;color:var(--tx2);text-transform:uppercase;margin-bottom:6px}
+/* GENRE CARDS */
+.gg{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(200px,100%),1fr));gap:1.2rem}
+.gc{background:var(--surf);border:1px solid var(--br);padding:2rem 1.5rem;cursor:pointer;transition:transform .3s,box-shadow .3s,border-color .3s;position:relative;overflow:hidden;animation:fup .5s ease both}
+.gc::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .3s}
+.gc:hover{transform:translateY(-6px)}.gc:hover::before{opacity:1}.gc:hover .garr{transform:translateX(4px);opacity:1}.gc:hover .gico{transform:scale(1.1)}
+.gc-fps{--gc:#ff2d78}.gc-fps::before{background:radial-gradient(circle at 80% 20%,rgba(255,45,120,.12) 0%,transparent 70%)}.gc-fps:hover{border-color:rgba(255,45,120,.4);box-shadow:0 16px 40px rgba(0,0,0,.4),0 0 0 1px rgba(255,45,120,.2)}
+.gc-rpg{--gc:#7b2fff}.gc-rpg::before{background:radial-gradient(circle at 80% 20%,rgba(123,47,255,.12) 0%,transparent 70%)}.gc-rpg:hover{border-color:rgba(123,47,255,.4);box-shadow:0 16px 40px rgba(0,0,0,.4),0 0 0 1px rgba(123,47,255,.2)}
+.gc-str{--gc:#00e5ff}.gc-str::before{background:radial-gradient(circle at 80% 20%,rgba(0,229,255,.12) 0%,transparent 70%)}.gc-str:hover{border-color:rgba(0,229,255,.4);box-shadow:0 16px 40px rgba(0,0,0,.4),0 0 0 1px rgba(0,229,255,.2)}
+.gc-spt{--gc:#00ff88}.gc-spt::before{background:radial-gradient(circle at 80% 20%,rgba(0,255,136,.12) 0%,transparent 70%)}.gc-spt:hover{border-color:rgba(0,255,136,.4);box-shadow:0 16px 40px rgba(0,0,0,.4),0 0 0 1px rgba(0,255,136,.2)}
+.gc-sim{--gc:#ffb800}.gc-sim::before{background:radial-gradient(circle at 80% 20%,rgba(255,184,0,.12) 0%,transparent 70%)}.gc-sim:hover{border-color:rgba(255,184,0,.4);box-shadow:0 16px 40px rgba(0,0,0,.4),0 0 0 1px rgba(255,184,0,.2)}
+.gc-adv{--gc:#ff6b35}.gc-adv::before{background:radial-gradient(circle at 80% 20%,rgba(255,107,53,.12) 0%,transparent 70%)}.gc-adv:hover{border-color:rgba(255,107,53,.4);box-shadow:0 16px 40px rgba(0,0,0,.4),0 0 0 1px rgba(255,107,53,.2)}
+.gc-rac{--gc:#e040fb}.gc-rac::before{background:radial-gradient(circle at 80% 20%,rgba(224,64,251,.12) 0%,transparent 70%)}.gc-rac:hover{border-color:rgba(224,64,251,.4);box-shadow:0 16px 40px rgba(0,0,0,.4),0 0 0 1px rgba(224,64,251,.2)}
+.gc-hor{--gc:#ff1744}.gc-hor::before{background:radial-gradient(circle at 80% 20%,rgba(255,23,68,.12) 0%,transparent 70%)}.gc-hor:hover{border-color:rgba(255,23,68,.4);box-shadow:0 16px 40px rgba(0,0,0,.4),0 0 0 1px rgba(255,23,68,.2)}
+.gico{font-size:2.8rem;display:block;margin-bottom:1rem;transition:transform .3s}
+.gname{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:3px;margin-bottom:4px;color:var(--gc,var(--a))}
+.gcnt{font-family:'Share Tech Mono',monospace;font-size:.65rem;letter-spacing:2px;color:var(--tx2);text-transform:uppercase;margin-bottom:.75rem}
+.gdesc{font-size:.88rem;color:var(--tx2);line-height:1.5;margin-bottom:1rem}
+.garr{font-family:'Share Tech Mono',monospace;font-size:.7rem;letter-spacing:2px;color:var(--gc,var(--a));opacity:.6;transition:transform .25s,opacity .25s}
+/* GAME CARDS */
+.gmg{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(240px,100%),1fr));gap:1.5rem}
+.gmc{background:var(--surf);border:1px solid var(--br);position:relative;cursor:pointer;transition:transform .3s,box-shadow .3s;overflow:hidden;animation:fup .5s ease both}
+.gmc:hover{transform:translateY(-6px);box-shadow:0 20px 40px rgba(0,0,0,.4),0 0 0 1px rgba(0,229,255,.2)}.gmc:hover .cov{opacity:1}.gmc:hover .cw img{transform:scale(1.06)}
+.cw{aspect-ratio:3/4;overflow:hidden;position:relative;background:#020408}
+.cw img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s}
+.img-err{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;font-family:'Bebas Neue',sans-serif;letter-spacing:2px;font-size:.9rem;color:rgba(255,255,255,.4);text-align:center;padding:.5rem}
+.img-err span{font-size:2.5rem}
+.cov{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.92) 0%,transparent 55%);opacity:0;transition:opacity .3s;display:flex;align-items:flex-end;padding:1rem;gap:.5rem;flex-direction:column}
+.qadd{width:100%;background:var(--a);color:var(--bg);font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:3px;padding:10px;border:none;cursor:pointer;text-transform:uppercase;transition:background .2s}
+.qadd:hover{background:var(--a2)}
+.infob{width:100%;background:transparent;border:1px solid rgba(255,255,255,.25);color:#fff;font-family:'Share Tech Mono',monospace;font-size:.68rem;letter-spacing:2px;padding:8px;cursor:pointer;text-transform:uppercase;transition:all .2s}
+.infob:hover{border-color:var(--a);color:var(--a)}
+.bdg{position:absolute;top:12px;left:12px;font-family:'Share Tech Mono',monospace;font-size:.6rem;letter-spacing:2px;padding:3px 10px;text-transform:uppercase;z-index:2}
+.bdg-new{background:var(--a2);color:#fff}.bdg-sale{background:#ffb800;color:#000}.bdg-hot{background:var(--a3);color:#fff}
+.cb{padding:1rem}
+.cgen{font-family:'Share Tech Mono',monospace;font-size:.62rem;letter-spacing:2px;color:var(--a);text-transform:uppercase;margin-bottom:4px}
+.ctit{font-family:'Bebas Neue',sans-serif;font-size:1.25rem;letter-spacing:2px;margin-bottom:4px;line-height:1.1}
+.cdev{font-size:.8rem;color:var(--tx2);margin-bottom:.75rem}
+.crat{display:flex;align-items:center;gap:6px;margin-bottom:.75rem}
+.cstars{color:#ffb800;font-size:.8rem}
+.crn{font-family:'Share Tech Mono',monospace;font-size:.7rem;color:var(--tx2)}
+.cpr{display:flex;align-items:center;justify-content:space-between;gap:.5rem}
+.cprice{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--a);letter-spacing:2px}
+.corig{font-family:'Share Tech Mono',monospace;font-size:.75rem;color:var(--tx2);text-decoration:line-through}
+.addc{background:transparent;border:1px solid var(--a);color:var(--a);font-family:'Bebas Neue',sans-serif;font-size:.9rem;letter-spacing:2px;padding:8px 16px;cursor:pointer;transition:all .2s;text-transform:uppercase}
+.addc:hover,.addc.added{background:var(--a);color:var(--bg);box-shadow:var(--glow)}
+/* GENRE PAGE HERO */
+.ghero{position:relative;padding:4rem 5vw 3rem;overflow:hidden;border-bottom:1px solid var(--br)}
+.ghero-bg{position:absolute;inset:0;pointer-events:none}
+.ghero-c{position:relative;z-index:1}
+.back-b{display:inline-flex;align-items:center;gap:8px;background:transparent;border:1px solid var(--br);color:var(--tx2);font-family:'Share Tech Mono',monospace;font-size:.72rem;letter-spacing:2px;padding:8px 18px;cursor:pointer;text-transform:uppercase;transition:all .2s;margin-bottom:2rem}
+.back-b:hover{border-color:var(--a);color:var(--a)}
+.ghtit{font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,8vw,6rem);letter-spacing:3px;line-height:.9;margin-bottom:1rem}
+.ghdesc{font-size:1rem;color:var(--tx2);line-height:1.7;max-width:560px;margin-bottom:2rem}
+.ghstats{display:flex;gap:2rem;flex-wrap:wrap}
+.ghsn{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:2px;line-height:1}
+.ghsl{font-family:'Share Tech Mono',monospace;font-size:.6rem;letter-spacing:2px;color:var(--tx2);text-transform:uppercase}
+/* FILTER BAR */
+.fbar{position:relative;z-index:1;display:flex;gap:.6rem;padding:1.5rem 5vw;border-bottom:1px solid var(--br);background:rgba(13,21,38,.3);flex-wrap:wrap;align-items:center}
+.flbl{font-family:'Share Tech Mono',monospace;font-size:.65rem;letter-spacing:2px;color:var(--tx2);text-transform:uppercase;margin-right:.5rem}
+.fb{background:transparent;border:1px solid var(--br);color:var(--tx2);font-family:'Share Tech Mono',monospace;font-size:.65rem;letter-spacing:2px;padding:6px 14px;cursor:pointer;text-transform:uppercase;transition:all .2s}
+.fb:hover,.fb.active{border-color:var(--a);color:var(--a);background:rgba(0,229,255,.05)}
+/* GAME DETAIL MODAL */
+.movl{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:800;opacity:0;pointer-events:none;transition:opacity .3s;backdrop-filter:blur(10px)}
+.movl.open{opacity:1;pointer-events:all}
+.modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.92);width:min(940px,95vw);max-height:90vh;background:var(--surf);border:1px solid var(--br);z-index:801;overflow-y:auto;transition:transform .35s cubic-bezier(.22,1,.36,1),opacity .35s;opacity:0;scrollbar-width:thin;scrollbar-color:var(--br) transparent}
+.movl.open .modal{transform:translate(-50%,-50%) scale(1);opacity:1}
+.mi{display:grid;grid-template-columns:300px 1fr}
+.mcover{width:100%;height:100%;object-fit:cover;display:block;background:#020408;min-height:420px}
+.mcw{position:relative;overflow:hidden;background:#020408}
+.mcls{position:absolute;top:12px;right:12px;background:rgba(0,0,0,.7);border:1px solid var(--br);color:var(--tx2);cursor:pointer;font-size:1.1rem;width:36px;height:36px;display:flex;align-items:center;justify-content:center;transition:all .2s;z-index:2}
+.mcls:hover{border-color:var(--a2);color:var(--a2)}
+.mbody{padding:2rem;overflow-y:auto}
+.mtag{font-family:'Share Tech Mono',monospace;font-size:.65rem;letter-spacing:3px;color:var(--a);text-transform:uppercase;margin-bottom:.75rem}
+.mtit{font-family:'Bebas Neue',sans-serif;font-size:2.4rem;letter-spacing:3px;line-height:1;margin-bottom:.25rem}
+.mdev{font-size:.9rem;color:var(--tx2);margin-bottom:1rem}
+.mrat{display:flex;align-items:center;gap:10px;margin-bottom:1.5rem}
+.mstars{color:#ffb800;font-size:1rem;letter-spacing:2px}
+.mrn{font-family:'Share Tech Mono',monospace;font-size:.75rem;color:var(--tx2)}
+.mdesc{font-size:.95rem;color:var(--tx2);line-height:1.7;margin-bottom:1.5rem}
+.mmgrid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1.5rem}
+.mmi{background:var(--bg2);border:1px solid var(--br);padding:.75rem}
+.mmil{font-family:'Share Tech Mono',monospace;font-size:.58rem;letter-spacing:2px;color:var(--tx2);text-transform:uppercase;margin-bottom:3px}
+.mmiv{font-size:.92rem;font-weight:600;color:var(--tx)}
+.mtags{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.5rem}
+.mtag2{background:var(--bg2);border:1px solid var(--br);font-family:'Share Tech Mono',monospace;font-size:.6rem;letter-spacing:2px;padding:4px 10px;color:var(--tx2);text-transform:uppercase}
+.mscrow{display:flex;gap:.5rem;margin-bottom:1.5rem;overflow-x:auto;scrollbar-width:thin;scrollbar-color:var(--br) transparent;padding-bottom:4px}
+.msc{width:130px;height:74px;object-fit:cover;flex-shrink:0;border:1px solid var(--br);cursor:pointer;transition:border-color .2s;display:block;background:#020408}
+.msc:hover{border-color:var(--a)}
+.mreq{background:var(--bg2);border:1px solid var(--br);padding:1rem;margin-bottom:1.5rem}
+.mreqt{font-family:'Share Tech Mono',monospace;font-size:.65rem;letter-spacing:3px;color:var(--a);text-transform:uppercase;margin-bottom:.75rem;padding-bottom:.5rem;border-bottom:1px solid var(--br)}
+.mreqr{display:flex;gap:.5rem;font-size:.85rem;margin-bottom:.35rem}
+.mreqk{color:var(--tx2);min-width:90px;font-weight:600;font-family:'Share Tech Mono',monospace;font-size:.7rem;letter-spacing:1px}
+.mreqv{color:var(--tx)}
+.mprrow{display:flex;align-items:center;gap:1rem;margin-bottom:.75rem}
+.mpr{font-family:'Bebas Neue',sans-serif;font-size:2.5rem;color:var(--a2);letter-spacing:3px;text-shadow:0 0 20px rgba(255,45,120,.4)}
+.mpro{font-family:'Share Tech Mono',monospace;font-size:.85rem;color:var(--tx2);text-decoration:line-through}
+.mdisc{background:var(--a2);color:#fff;font-family:'Share Tech Mono',monospace;font-size:.65rem;letter-spacing:1px;padding:3px 8px}
+.madd{width:100%;background:var(--a);color:var(--bg);font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:4px;padding:16px;border:none;cursor:pointer;text-transform:uppercase;transition:all .2s;clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px))}
+.madd:hover{box-shadow:var(--glow);transform:translateY(-1px)}
+.madd.added{background:var(--a3)}
+/* FEATURED */
+.fsec{padding:0 5vw 5rem;position:relative;z-index:1}
+.fcard{background:var(--surf);border:1px solid var(--br);display:grid;grid-template-columns:1fr 1fr;overflow:hidden;position:relative;min-height:360px}
+.fcard::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 50% 80% at 30% 50%,rgba(123,47,255,.15) 0%,transparent 70%);pointer-events:none}
+.fi{padding:3rem;display:flex;flex-direction:column;justify-content:center;position:relative;z-index:1}
+.ftit{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.5rem,5vw,4rem);letter-spacing:3px;line-height:.95;margin-bottom:1rem}
+.ftit span{color:var(--a);text-shadow:0 0 20px rgba(0,229,255,.4)}
+.fdesc{font-size:.95rem;color:var(--tx2);line-height:1.7;margin-bottom:1.5rem;max-width:380px}
+.fmeta{display:flex;gap:1.5rem;margin-bottom:2rem;flex-wrap:wrap}
+.fm{display:flex;flex-direction:column;gap:2px}
+.fml{font-family:'Share Tech Mono',monospace;font-size:.6rem;letter-spacing:2px;color:var(--tx2);text-transform:uppercase}
+.fmv{font-size:.9rem;font-weight:600;color:var(--tx)}
+.fpr{font-family:'Bebas Neue',sans-serif;font-size:3rem;color:var(--a2);letter-spacing:3px;line-height:1;margin-bottom:1.5rem;text-shadow:0 0 20px rgba(255,45,120,.4)}
+.fbdg{display:inline-block;background:var(--a2);color:#fff;font-family:'Share Tech Mono',monospace;font-size:.65rem;letter-spacing:3px;padding:4px 12px;margin-bottom:1.2rem;text-transform:uppercase}
+.fimg{overflow:hidden;position:relative}
+.fimg img{width:100%;height:100%;object-fit:cover;display:block}
+/* HOW IT WORKS */
+.how-s{background:var(--bg2);border-top:1px solid var(--br);border-bottom:1px solid var(--br)}
+.stp-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:2rem}
+.stp{text-align:center;padding:2rem 1rem;position:relative;animation:fup .6s ease both}
+.stp::after{content:'→';position:absolute;right:-1rem;top:50%;transform:translateY(-50%);color:var(--br);font-size:1.5rem}
+.stp:last-child::after{display:none}
+.stp-n{font-family:'Bebas Neue',sans-serif;font-size:4rem;color:rgba(0,229,255,.08);line-height:1;margin-bottom:-.5rem}
+.stp-i{font-size:2.5rem;margin-bottom:1rem;display:block}
+.stp-t{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:2px;margin-bottom:.5rem;color:var(--a)}
+.stp p{font-size:.9rem;color:var(--tx2);line-height:1.6}
+/* CART */
+.covl{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:999;opacity:0;pointer-events:none;transition:opacity .3s;backdrop-filter:blur(4px)}
+.covl.open{opacity:1;pointer-events:all}
+.cart-d{position:fixed;top:0;right:-440px;width:min(440px,100vw);height:100vh;background:var(--surf);border-left:1px solid var(--br);z-index:1000;transition:right .35s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;box-shadow:-20px 0 60px rgba(0,0,0,.5)}
+.cart-d.open{right:0}
+.cart-h{display:flex;align-items:center;justify-content:space-between;padding:1.5rem;border-bottom:1px solid var(--br)}
+.cart-h h3{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:3px;color:var(--a)}
+.ccls{background:none;border:1px solid var(--br);color:var(--tx2);cursor:pointer;font-size:1.2rem;width:34px;height:34px;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.ccls:hover{border-color:var(--a2);color:var(--a2)}
+.cart-items{flex:1;overflow-y:auto;padding:1rem;scrollbar-width:thin;scrollbar-color:var(--br) transparent}
+.ci{display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--br);animation:fup .3s ease}
+.ci-img{width:52px;height:72px;object-fit:cover;flex-shrink:0;border:1px solid var(--br);background:#020408}
+.ci-info{flex:1}
+.ci-t{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:2px;margin-bottom:4px}
+.ci-g{font-family:'Share Tech Mono',monospace;font-size:.6rem;letter-spacing:2px;color:var(--a);text-transform:uppercase;margin-bottom:8px}
+.ci-p{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:var(--a2);letter-spacing:2px}
+.ri{background:none;border:none;color:var(--tx2);cursor:pointer;font-size:1rem;align-self:flex-start;padding:2px;transition:color .2s}
+.ri:hover{color:var(--a2)}
+.ce{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:1rem;color:var(--tx2)}
+.ce-i{font-size:3rem;opacity:.3}
+.ce p{font-family:'Share Tech Mono',monospace;font-size:.75rem;letter-spacing:2px}
+.cart-f{padding:1.5rem;border-top:1px solid var(--br);background:var(--bg2)}
+.ctr{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem}
+.ctl{font-family:'Share Tech Mono',monospace;font-size:.75rem;letter-spacing:2px;color:var(--tx2);text-transform:uppercase}
+.ctv{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:2px;color:var(--a)}
+.chk{width:100%;background:var(--a2);color:#fff;font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:4px;padding:16px;border:none;cursor:pointer;text-transform:uppercase;transition:all .2s;clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px))}
+.chk:hover{box-shadow:var(--glow2);transform:translateY(-1px)}
+/* PAYMENT MODAL */
+.pmovl{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:1100;opacity:0;pointer-events:none;transition:opacity .3s;backdrop-filter:blur(12px)}
+.pmovl.open{opacity:1;pointer-events:all}
+.pmod{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.92);width:min(580px,96vw);max-height:92vh;background:var(--surf);border:1px solid var(--br);z-index:1101;overflow-y:auto;transition:transform .4s cubic-bezier(.22,1,.36,1),opacity .4s;opacity:0;scrollbar-width:thin;scrollbar-color:var(--br) transparent;box-shadow:0 0 80px rgba(0,0,0,.7)}
+.pmovl.open .pmod{transform:translate(-50%,-50%) scale(1);opacity:1}
+.ph{padding:1.5rem;border-bottom:1px solid var(--br);display:flex;align-items:center;justify-content:space-between}
+.ph h3{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:3px;color:var(--a)}
+.pcls{background:none;border:1px solid var(--br);color:var(--tx2);cursor:pointer;font-size:1.1rem;width:34px;height:34px;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.pcls:hover{border-color:var(--a2);color:var(--a2)}
+.pb{padding:1.5rem}
+/* Payment progress steps */
+.psteps{display:flex;align-items:center;margin-bottom:2rem}
+.psi{flex:1;text-align:center;position:relative}
+.psi::before{content:'';position:absolute;top:14px;left:calc(-50% + 14px);width:calc(100% - 28px);height:1px;background:var(--br)}
+.psi:first-child::before{display:none}
+.psin{width:28px;height:28px;border-radius:50%;border:2px solid var(--br);font-family:'Share Tech Mono',monospace;font-size:.65rem;display:flex;align-items:center;justify-content:center;margin:0 auto .4rem;color:var(--tx2);transition:all .3s;background:var(--surf)}
+.psin.done{background:var(--a);border-color:var(--a);color:var(--bg)}
+.psin.cur{border-color:var(--a);color:var(--a)}
+.psil{font-family:'Share Tech Mono',monospace;font-size:.56rem;letter-spacing:1px;color:var(--tx2);text-transform:uppercase}
+/* order summary in payment */
+.osumm{background:var(--bg2);border:1px solid var(--br);padding:1rem;margin-bottom:1.5rem}
+.ostit{font-family:'Share Tech Mono',monospace;font-size:.65rem;letter-spacing:3px;color:var(--a);text-transform:uppercase;margin-bottom:.75rem}
+.oitem{display:flex;justify-content:space-between;align-items:center;padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:.88rem}
+.oitem:last-child{border-bottom:none}
+.oin{color:var(--tx2);max-width:68%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.oip{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:1px;color:var(--a)}
+.odiv{border:none;border-top:1px solid var(--br);margin:.75rem 0}
+.otr{display:flex;justify-content:space-between;align-items:center}
+.otl{font-family:'Share Tech Mono',monospace;font-size:.7rem;letter-spacing:2px;color:var(--tx2);text-transform:uppercase}
+.otv{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:2px;color:var(--a2)}
+/* payment method */
+.pmg{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1.5rem}
+.pm{background:var(--bg2);border:2px solid var(--br);padding:1rem;cursor:pointer;transition:all .2s;text-align:center;position:relative}
+.pm:hover{border-color:rgba(0,229,255,.3)}.pm.sel{border-color:var(--a);background:rgba(0,229,255,.05)}
+.pm.sel::after{content:'✓';position:absolute;top:8px;right:10px;color:var(--a);font-family:'Share Tech Mono',monospace;font-size:.7rem}
+.pmi{font-size:1.8rem;display:block;margin-bottom:.5rem}
+.pmn{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:2px;color:var(--tx)}
+.pmd{font-family:'Share Tech Mono',monospace;font-size:.6rem;letter-spacing:1px;color:var(--tx2);margin-top:2px}
+/* form */
+.fg{margin-bottom:1rem}
+.fl{font-family:'Share Tech Mono',monospace;font-size:.65rem;letter-spacing:2px;color:var(--tx2);text-transform:uppercase;display:block;margin-bottom:.5rem}
+.fin{width:100%;background:var(--bg2);border:1px solid var(--br);color:var(--tx);font-family:'Rajdhani',sans-serif;font-size:1rem;padding:10px 14px;outline:none;transition:border-color .2s}
+.fin:focus{border-color:var(--a)}
+.fin::placeholder{color:rgba(138,153,187,.4)}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.fhint{font-family:'Share Tech Mono',monospace;font-size:.6rem;letter-spacing:1px;color:var(--tx2);margin-top:.4rem}
+.upiapps{display:flex;gap:.5rem;margin-top:.75rem;flex-wrap:wrap}
+.uapp{background:var(--bg2);border:1px solid var(--br);padding:6px 14px;cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:.62rem;letter-spacing:1px;color:var(--tx2);transition:all .2s;display:flex;align-items:center;gap:6px}
+.uapp:hover,.uapp.sel{border-color:var(--a);color:var(--a);background:rgba(0,229,255,.05)}
+.codbox{background:var(--bg2);border:1px solid rgba(255,184,0,.2);padding:1.2rem;margin-bottom:1rem}
+.codtit{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:2px;color:#ffb800;margin-bottom:.5rem}
+.codbox p{font-size:.88rem;color:var(--tx2);line-height:1.6}
+.bkg{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:1rem}
+.bkb{background:var(--bg2);border:1px solid var(--br);padding:.75rem .5rem;cursor:pointer;transition:all .2s;text-align:center;font-family:'Share Tech Mono',monospace;font-size:.6rem;letter-spacing:1px;color:var(--tx2);text-transform:uppercase}
+.bkb:hover,.bkb.sel{border-color:var(--a);color:var(--a);background:rgba(0,229,255,.05)}
+.paynow{width:100%;background:var(--a2);color:#fff;font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:4px;padding:18px;border:none;cursor:pointer;text-transform:uppercase;transition:all .2s;clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px));margin-top:.75rem}
+.paynow:hover{box-shadow:var(--glow2);transform:translateY(-1px)}
+.secbdg{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:.75rem;font-family:'Share Tech Mono',monospace;font-size:.62rem;letter-spacing:2px;color:var(--tx2)}
+/* success */
+.succ{text-align:center;padding:2rem 1rem}
+.sico2{font-size:4rem;display:block;margin-bottom:1rem;animation:popin .4s cubic-bezier(.22,1,.36,1) both}
+.stit{font-family:'Bebas Neue',sans-serif;font-size:2.5rem;letter-spacing:3px;color:var(--a);margin-bottom:.5rem}
+.ssub{font-size:1rem;color:var(--tx2);margin-bottom:2rem;line-height:1.6}
+.sdet{background:var(--bg2);border:1px solid var(--br);padding:1rem;margin-bottom:1.5rem;text-align:left}
+.sdr{display:flex;justify-content:space-between;padding:.4rem 0;font-size:.88rem;border-bottom:1px solid rgba(255,255,255,.05)}
+.sdr:last-child{border-bottom:none}
+.sdl{color:var(--tx2);font-family:'Share Tech Mono',monospace;font-size:.65rem;letter-spacing:1px;text-transform:uppercase}
+.sdv{color:var(--tx);font-weight:600}
+@keyframes popin{from{transform:scale(0) rotate(-10deg)}to{transform:scale(1) rotate(0)}}
+/* TOAST */
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:var(--surf2);border:1px solid var(--a);color:var(--a);font-family:'Share Tech Mono',monospace;font-size:.75rem;letter-spacing:2px;padding:12px 24px;z-index:2000;transition:transform .3s;white-space:nowrap;box-shadow:var(--glow)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+/* FOOTER */
+footer{position:relative;z-index:1;background:var(--bg2);border-top:1px solid var(--br);padding:4rem 5vw 2rem}
+.fg2{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem}
+.fbrand p{font-size:.9rem;color:var(--tx2);line-height:1.7;margin:.75rem 0 1.5rem}
+.slinks{display:flex;gap:.75rem}
+.sla{width:36px;height:36px;border:1px solid var(--br);display:flex;align-items:center;justify-content:center;font-size:.85rem;text-decoration:none;color:var(--tx2);transition:all .2s}
+.sla:hover{border-color:var(--a);color:var(--a);box-shadow:var(--glow)}
+.fc h4{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:3px;color:var(--tx);margin-bottom:1.2rem}
+.fc ul{list-style:none;display:flex;flex-direction:column;gap:.6rem}
+.fc a{font-size:.85rem;color:var(--tx2);text-decoration:none;transition:color .2s;cursor:pointer}
+.fc a:hover{color:var(--a)}
+.fbot{border-top:1px solid var(--br);padding-top:2rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+.fbot p{font-family:'Share Tech Mono',monospace;font-size:.65rem;letter-spacing:2px;color:var(--tx2);text-transform:uppercase}
+.pics{display:flex;gap:.5rem}
+.pic{background:var(--surf);border:1px solid var(--br);padding:4px 8px;font-family:'Share Tech Mono',monospace;font-size:.6rem;color:var(--tx2)}
+/* ── LOGIN BUTTON & USER AVATAR ── */
+.login-btn{background:transparent;border:1px solid rgba(255,255,255,.18);color:var(--tx2);font-family:'Share Tech Mono',monospace;font-size:.72rem;letter-spacing:2px;padding:8px 16px;cursor:pointer;text-transform:uppercase;transition:all .2s;white-space:nowrap}
+.login-btn:hover{border-color:var(--a);color:var(--a)}
+.user-pill{display:flex;align-items:center;gap:8px;cursor:pointer;background:transparent;border:1px solid var(--br);padding:5px 12px 5px 5px;transition:all .2s;position:relative}
+.user-pill:hover{border-color:var(--a)}
+.user-av{width:28px;height:28px;border-radius:50%;object-fit:cover;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
+.user-name{font-family:'Share Tech Mono',monospace;font-size:.68rem;letter-spacing:1px;color:var(--tx);max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* dropdown */
+.user-menu{position:absolute;top:calc(100% + 8px);right:0;background:var(--surf);border:1px solid var(--br);min-width:180px;z-index:300;box-shadow:0 16px 40px rgba(0,0,0,.5);display:none}
+.user-pill:hover .user-menu,.user-pill:focus-within .user-menu{display:block}
+.user-menu-item{display:flex;align-items:center;gap:10px;padding:.75rem 1rem;font-family:'Share Tech Mono',monospace;font-size:.68rem;letter-spacing:1px;color:var(--tx2);cursor:pointer;text-transform:uppercase;transition:all .2s;border-bottom:1px solid var(--br)}
+.user-menu-item:last-child{border-bottom:none}
+.user-menu-item:hover{background:rgba(0,229,255,.05);color:var(--a)}
+.user-menu-item.logout{color:var(--a2)}.user-menu-item.logout:hover{background:rgba(255,45,120,.05);color:var(--a2)}
+
+/* ── AUTH FULL-PAGE OVERLAY ── */
+.auth-ovl{position:fixed;inset:0;z-index:1200;display:none;align-items:center;justify-content:center}
+.auth-ovl.open{display:flex}
+.auth-backdrop{position:absolute;inset:0;background:rgba(2,4,14,.96);backdrop-filter:blur(20px)}
+/* particles */
+.auth-particles{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.auth-particle{position:absolute;border-radius:50%;animation:pfloat linear infinite;opacity:0}
+@keyframes pfloat{0%{transform:translateY(100vh) scale(0);opacity:0}10%{opacity:.6}90%{opacity:.3}100%{transform:translateY(-20vh) scale(1);opacity:0}}
+/* card */
+.auth-card{position:relative;z-index:1;width:min(480px,95vw);animation:authIn .45s cubic-bezier(.22,1,.36,1) both}
+@keyframes authIn{from{opacity:0;transform:translateY(40px) scale(.96)}to{opacity:1;transform:none}}
+.auth-top{text-align:center;padding:2.5rem 2.5rem 0}
+.auth-logo{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:.5rem}
+.auth-logo-mark{width:32px;height:32px;filter:drop-shadow(0 0 6px rgba(139,92,246,.9))}
+.auth-logo-text{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:5px;background:linear-gradient(90deg,#a78bfa,#00e5ff,#ff2d78);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.auth-logo span{color:var(--a2)}
+.auth-tagline{font-family:'Share Tech Mono',monospace;font-size:.62rem;letter-spacing:3px;color:var(--tx2);text-transform:uppercase;margin-bottom:2rem}
+.auth-tabs{display:flex;border-bottom:1px solid var(--br);margin:0 2.5rem}
+.auth-tab{flex:1;font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:3px;padding:.75rem;background:none;border:none;color:var(--tx2);cursor:pointer;text-transform:uppercase;transition:color .2s;position:relative}
+.auth-tab.active{color:var(--a)}
+.auth-tab.active::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:2px;background:var(--a);box-shadow:0 0 8px var(--a)}
+.auth-body{padding:2rem 2.5rem 2.5rem;background:var(--surf);border:1px solid var(--br);border-top:none;margin:0 0 0 0}
+/* social buttons */
+.social-auth-btn{width:100%;display:flex;align-items:center;gap:12px;padding:13px 18px;background:var(--bg2);border:1px solid var(--br);color:var(--tx);font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:600;cursor:pointer;transition:all .25s;margin-bottom:.75rem;text-align:left;position:relative;overflow:hidden}
+.social-auth-btn::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .25s}
+.social-auth-btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.social-auth-btn:hover::before{opacity:1}
+.google-btn{border-color:rgba(66,133,244,.3)}
+.google-btn::before{background:linear-gradient(135deg,rgba(66,133,244,.08),rgba(234,67,53,.05))}
+.google-btn:hover{border-color:rgba(66,133,244,.6);box-shadow:0 8px 24px rgba(66,133,244,.15)}
+.outlook-btn{border-color:rgba(0,120,212,.3)}
+.outlook-btn::before{background:linear-gradient(135deg,rgba(0,120,212,.08),rgba(0,188,242,.05))}
+.outlook-btn:hover{border-color:rgba(0,120,212,.6);box-shadow:0 8px 24px rgba(0,120,212,.15)}
+.github-btn{border-color:rgba(255,255,255,.12)}
+.github-btn::before{background:linear-gradient(135deg,rgba(255,255,255,.05),transparent)}
+.github-btn:hover{border-color:rgba(255,255,255,.3);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.social-icon{width:22px;height:22px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.social-icon svg{width:22px;height:22px}
+.or-divider{display:flex;align-items:center;gap:12px;margin:1.25rem 0;color:var(--tx2);font-family:'Share Tech Mono',monospace;font-size:.62rem;letter-spacing:3px}
+.or-divider::before,.or-divider::after{content:'';flex:1;height:1px;background:var(--br)}
+/* form */
+.auth-fg{margin-bottom:1rem}
+.auth-fl{font-family:'Share Tech Mono',monospace;font-size:.62rem;letter-spacing:2px;color:var(--tx2);text-transform:uppercase;display:block;margin-bottom:.5rem}
+.auth-in{width:100%;background:var(--bg2);border:1px solid var(--br);color:var(--tx);font-family:'Rajdhani',sans-serif;font-size:1rem;padding:11px 14px;outline:none;transition:border-color .2s}
+.auth-in:focus{border-color:var(--a)}
+.auth-in::placeholder{color:rgba(138,153,187,.4)}
+.auth-submit{width:100%;background:var(--a);color:var(--bg);font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:4px;padding:15px;border:none;cursor:pointer;text-transform:uppercase;transition:all .2s;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px));margin-top:.5rem}
+.auth-submit:hover{box-shadow:var(--glow);transform:translateY(-1px)}
+.auth-err{background:rgba(255,45,120,.1);border:1px solid rgba(255,45,120,.3);color:var(--a2);font-family:'Share Tech Mono',monospace;font-size:.68rem;letter-spacing:1px;padding:.75rem;margin-bottom:1rem;display:none}
+.auth-err.show{display:block}
+.auth-close{position:absolute;top:1.2rem;right:1.2rem;background:transparent;border:1px solid var(--br);color:var(--tx2);width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1rem;z-index:2;transition:all .2s}
+.auth-close:hover{border-color:var(--a2);color:var(--a2)}
+.auth-foot{font-family:'Share Tech Mono',monospace;font-size:.62rem;letter-spacing:1px;color:var(--tx2);text-align:center;margin-top:1.2rem}
+.auth-foot span{color:var(--a);cursor:pointer}
+.auth-foot span:hover{text-decoration:underline}
+/* oauth loading */
+.oauth-loading{display:none;flex-direction:column;align-items:center;justify-content:center;padding:3rem 2rem;text-align:center}
+.oauth-spinner{width:48px;height:48px;border:3px solid var(--br);border-top-color:var(--a);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:1.5rem}
+.oauth-msg{font-family:'Share Tech Mono',monospace;font-size:.72rem;letter-spacing:2px;color:var(--tx2);text-transform:uppercase}
+/* welcome toast */
+.welcome-toast{position:fixed;top:80px;right:2rem;background:var(--surf);border:1px solid var(--a);padding:1rem 1.5rem;z-index:2001;display:flex;align-items:center;gap:12px;transform:translateX(120%);transition:transform .4s cubic-bezier(.22,1,.36,1);box-shadow:var(--glow);max-width:300px}
+.welcome-toast.show{transform:translateX(0)}
+.wt-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0}
+.wt-info{flex:1}
+.wt-name{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:2px;color:var(--tx)}
+.wt-sub{font-family:'Share Tech Mono',monospace;font-size:.6rem;letter-spacing:1px;color:var(--tx2)}
+/* ── PROFILE PAGE ── */
+.prof-ovl{position:fixed;inset:0;z-index:1050;display:none;align-items:flex-start;justify-content:flex-end}
+.prof-ovl.open{display:flex}
+.prof-backdrop{position:absolute;inset:0;background:rgba(2,4,14,.7);backdrop-filter:blur(6px)}
+.prof-panel{position:relative;z-index:1;width:min(560px,100vw);height:100vh;background:var(--bg2);border-left:1px solid var(--br);overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--br) transparent;animation:panelIn .4s cubic-bezier(.22,1,.36,1) both;display:flex;flex-direction:column}
+@keyframes panelIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes panelOut{from{transform:translateX(0);opacity:1}to{transform:translateX(100%);opacity:0}}
+/* header */
+.prof-header{padding:1.5rem 2rem;border-bottom:1px solid var(--br);display:flex;align-items:center;justify-content:space-between;background:var(--surf);position:sticky;top:0;z-index:2}
+.prof-header-l{display:flex;align-items:center;gap:10px}
+.prof-header-l svg{width:18px;height:18px;opacity:.6}
+.prof-header-title{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:3px;color:var(--a)}
+.prof-close{background:none;border:1px solid var(--br);color:var(--tx2);cursor:pointer;width:32px;height:32px;display:flex;align-items:center;justify-content:center;transition:all .2s;font-size:.9rem}
+.prof-close:hover{border-color:var(--a2);color:var(--a2)}
+/* tabs */
+.prof-tabs{display:flex;border-bottom:1px solid var(--br);background:var(--surf);padding:0 2rem}
+.prof-tab{font-family:'Share Tech Mono',monospace;font-size:.65rem;letter-spacing:2px;padding:.9rem 1rem;background:none;border:none;color:var(--tx2);cursor:pointer;text-transform:uppercase;position:relative;transition:color .2s;white-space:nowrap}
+.prof-tab.active{color:var(--a)}
+.prof-tab.active::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:2px;background:var(--a);box-shadow:0 0 8px var(--a)}
+/* body */
+.prof-body{padding:2rem;flex:1}
+.prof-section{margin-bottom:2rem}
+.prof-sec-title{font-family:'Share Tech Mono',monospace;font-size:.65rem;letter-spacing:3px;color:var(--a);text-transform:uppercase;margin-bottom:1.2rem;padding-bottom:.6rem;border-bottom:1px solid var(--br);display:flex;align-items:center;gap:8px}
+/* avatar editor */
+.prof-avatar-row{display:flex;align-items:center;gap:1.5rem;margin-bottom:2rem;padding:1.5rem;background:var(--surf);border:1px solid var(--br)}
+.prof-av-big{width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:700;color:#fff;flex-shrink:0;position:relative;cursor:pointer;border:3px solid var(--br);transition:border-color .2s}
+.prof-av-big:hover{border-color:var(--a)}
+.prof-av-big:hover .av-edit-icon{opacity:1}
+.av-edit-icon{position:absolute;inset:0;border-radius:50%;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;font-size:1.3rem}
+.prof-av-info{flex:1}
+.prof-av-name{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:3px;color:var(--tx);margin-bottom:4px}
+.prof-av-email{font-family:'Share Tech Mono',monospace;font-size:.65rem;letter-spacing:1px;color:var(--tx2);margin-bottom:.75rem}
+.prof-av-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(0,229,255,.08);border:1px solid rgba(0,229,255,.2);padding:3px 12px;font-family:'Share Tech Mono',monospace;font-size:.6rem;letter-spacing:2px;color:var(--a);text-transform:uppercase}
+/* color picker */
+.color-picker-row{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1rem}
+.cp-swatch{width:28px;height:28px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:transform .2s,border-color .2s;flex-shrink:0}
+.cp-swatch:hover{transform:scale(1.15)}.cp-swatch.active{border-color:#fff;transform:scale(1.15)}
+/* form */
+.pf-group{margin-bottom:1.2rem}
+.pf-label{font-family:'Share Tech Mono',monospace;font-size:.62rem;letter-spacing:2px;color:var(--tx2);text-transform:uppercase;display:block;margin-bottom:.5rem}
+.pf-input{width:100%;background:var(--bg);border:1px solid var(--br);color:var(--tx);font-family:'Rajdhani',sans-serif;font-size:1rem;padding:10px 14px;outline:none;transition:border-color .2s}
+.pf-input:focus{border-color:var(--a)}
+.pf-input::placeholder{color:rgba(138,153,187,.35)}
+.pf-input:disabled{opacity:.4;cursor:not-allowed}
+.pf-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.pf-hint{font-family:'Share Tech Mono',monospace;font-size:.58rem;letter-spacing:1px;color:var(--tx2);margin-top:.4rem}
+.pf-select{width:100%;background:var(--bg);border:1px solid var(--br);color:var(--tx);font-family:'Rajdhani',sans-serif;font-size:1rem;padding:10px 14px;outline:none;cursor:pointer;-webkit-appearance:none;transition:border-color .2s}
+.pf-select:focus{border-color:var(--a)}
+.pf-select option{background:var(--bg2)}
+/* skill tags */
+.skill-tags{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:.75rem}
+.skill-tag{display:flex;align-items:center;gap:6px;background:rgba(123,47,255,.1);border:1px solid rgba(123,47,255,.3);padding:4px 12px;font-family:'Share Tech Mono',monospace;font-size:.62rem;letter-spacing:1px;color:#a78bfa;text-transform:uppercase}
+.skill-tag-rm{background:none;border:none;color:rgba(167,139,250,.5);cursor:pointer;font-size:.8rem;padding:0;line-height:1;transition:color .2s}
+.skill-tag-rm:hover{color:var(--a2)}
+.skill-add-row{display:flex;gap:.5rem}
+.skill-add-input{flex:1;background:var(--bg);border:1px solid var(--br);color:var(--tx);font-family:'Rajdhani',sans-serif;font-size:.9rem;padding:8px 12px;outline:none;transition:border-color .2s}
+.skill-add-input:focus{border-color:var(--a3)}
+.skill-add-btn{background:rgba(123,47,255,.15);border:1px solid rgba(123,47,255,.4);color:#a78bfa;font-family:'Share Tech Mono',monospace;font-size:.65rem;letter-spacing:2px;padding:8px 16px;cursor:pointer;text-transform:uppercase;transition:all .2s}
+.skill-add-btn:hover{background:rgba(123,47,255,.3)}
+/* social links */
+.social-input-row{display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem}
+.social-platform-icon{width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;background:var(--surf);border:1px solid var(--br);flex-shrink:0}
+/* stats grid */
+.prof-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem}
+.prof-stat-box{background:var(--surf);border:1px solid var(--br);padding:1.25rem;text-align:center;position:relative;overflow:hidden}
+.prof-stat-box::before{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--psb-col,var(--a))}
+.prof-stat-val{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:2px;color:var(--psb-col,var(--a));line-height:1}
+.prof-stat-lbl{font-family:'Share Tech Mono',monospace;font-size:.58rem;letter-spacing:2px;color:var(--tx2);text-transform:uppercase;margin-top:4px}
+/* activity feed */
+.activity-item{display:flex;gap:1rem;padding:.9rem 0;border-bottom:1px solid var(--br)}
+.activity-item:last-child{border-bottom:none}
+.act-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.act-info{flex:1}
+.act-title{font-size:.92rem;font-weight:600;color:var(--tx);margin-bottom:2px}
+.act-time{font-family:'Share Tech Mono',monospace;font-size:.58rem;letter-spacing:1px;color:var(--tx2)}
+/* save button */
+.prof-save-bar{padding:1.5rem 2rem;border-top:1px solid var(--br);background:var(--surf);position:sticky;bottom:0;display:flex;gap:1rem;align-items:center}
+.prof-save-btn{flex:1;background:var(--a);color:var(--bg);font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:4px;padding:14px;border:none;cursor:pointer;text-transform:uppercase;transition:all .2s;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px))}
+.prof-save-btn:hover{box-shadow:var(--glow);transform:translateY(-1px)}
+.prof-discard-btn{background:transparent;border:1px solid var(--br);color:var(--tx2);font-family:'Share Tech Mono',monospace;font-size:.65rem;letter-spacing:2px;padding:14px 20px;cursor:pointer;text-transform:uppercase;transition:all .2s}
+.prof-discard-btn:hover{border-color:var(--a2);color:var(--a2)}
+.prof-save-status{font-family:'Share Tech Mono',monospace;font-size:.6rem;letter-spacing:2px;color:#00ff88;opacity:0;transition:opacity .3s}
+.prof-save-status.show{opacity:1}
+/* danger zone */
+.danger-zone{background:rgba(255,45,120,.04);border:1px solid rgba(255,45,120,.2);padding:1.25rem}
+.danger-title{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:2px;color:var(--a2);margin-bottom:.5rem}
+.danger-desc{font-size:.85rem;color:var(--tx2);margin-bottom:1rem;line-height:1.5}
+.danger-btn{background:transparent;border:1px solid rgba(255,45,120,.4);color:var(--a2);font-family:'Share Tech Mono',monospace;font-size:.65rem;letter-spacing:2px;padding:8px 18px;cursor:pointer;text-transform:uppercase;transition:all .2s}
+.danger-btn:hover{background:rgba(255,45,120,.1)}
+/* password strength */
+.pw-strength{height:3px;background:var(--bg);margin-top:.5rem;display:flex;gap:3px}
+.pw-seg{flex:1;border-radius:2px;background:var(--br);transition:background .3s}
+/* notification prefs */
+.notif-row{display:flex;align-items:center;justify-content:space-between;padding:.85rem 0;border-bottom:1px solid var(--br)}
+.notif-row:last-child{border-bottom:none}
+.notif-info{flex:1}
+.notif-title{font-size:.92rem;font-weight:600;color:var(--tx)}
+.notif-desc{font-family:'Share Tech Mono',monospace;font-size:.6rem;letter-spacing:1px;color:var(--tx2);margin-top:2px}
+.toggle-wrap{position:relative;width:44px;height:24px;flex-shrink:0}
+.toggle-wrap input{opacity:0;width:0;height:0;position:absolute}
+.toggle-slider{position:absolute;inset:0;background:var(--br);border-radius:24px;cursor:pointer;transition:background .3s}
+.toggle-slider::before{content:'';position:absolute;width:18px;height:18px;border-radius:50%;background:var(--tx2);top:3px;left:3px;transition:transform .3s,background .3s}
+.toggle-wrap input:checked+.toggle-slider{background:var(--a)}
+.toggle-wrap input:checked+.toggle-slider::before{transform:translateX(20px);background:#fff}
+/* ── REVIEWS SECTION ── */
+.rev-section{padding:5rem 0;overflow:hidden;position:relative;z-index:1;background:linear-gradient(180deg,var(--bg) 0%,var(--bg2) 50%,var(--bg) 100%)}
+.rev-section .sh{padding:0 5vw;margin-bottom:2.5rem}
+.rev-live-badge{display:flex;align-items:center;gap:8px;font-family:'Share Tech Mono',monospace;font-size:.65rem;letter-spacing:3px;color:var(--a2);text-transform:uppercase}
+.rev-dot{width:8px;height:8px;border-radius:50%;background:var(--a2);animation:revpulse 1.4s ease-in-out infinite;box-shadow:0 0 8px var(--a2)}
+@keyframes revpulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.5);opacity:.6}}
+.rev-mask{-webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 8%,#000 92%,transparent 100%);mask-image:linear-gradient(90deg,transparent 0%,#000 8%,#000 92%,transparent 100%)}
+.rev-track-wrap{overflow:hidden}
+.rev-track{display:flex;gap:1.2rem;width:max-content;animation:revscroll 55s linear infinite}
+.rev-track-rev{animation:revscroll-r 60s linear infinite}
+.rev-track:hover,.rev-track-rev:hover{animation-play-state:paused}
+@keyframes revscroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+@keyframes revscroll-r{0%{transform:translateX(-50%)}100%{transform:translateX(0)}}
+.rev-card{flex-shrink:0;width:300px;background:var(--surf);border:1px solid var(--br);padding:1.25rem;position:relative;overflow:hidden;transition:border-color .3s,transform .3s,box-shadow .3s}
+.rev-card:hover{border-color:var(--rev-col,var(--a));transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,.4)}
+.rev-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--rev-col,var(--a));opacity:.7}
+.rev-card-glow{position:absolute;inset:0;opacity:0;transition:opacity .3s;pointer-events:none;background:radial-gradient(circle at 50% 0%,color-mix(in srgb,var(--rev-col,var(--a)) 8%,transparent) 0%,transparent 70%)}
+.rev-card:hover .rev-card-glow{opacity:1}
+.rev-card-top{display:flex;align-items:center;gap:10px;margin-bottom:.9rem}
+.rev-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;color:#fff;flex-shrink:0;border:2px solid rgba(255,255,255,.12)}
+.rev-info{flex:1;min-width:0}
+.rev-name{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:.95rem;color:var(--tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rev-meta{font-family:'Share Tech Mono',monospace;font-size:.58rem;letter-spacing:1.5px;color:var(--tx2);margin-top:2px}
+.rev-stars{display:flex;gap:2px;margin-left:auto;flex-shrink:0}
+.rev-star{font-size:.75rem;line-height:1}
+.rev-game-tag{display:inline-flex;align-items:center;gap:6px;background:var(--bg2);border:1px solid var(--br);padding:3px 10px;margin-bottom:.75rem;font-family:'Share Tech Mono',monospace;font-size:.6rem;letter-spacing:2px;color:var(--rev-col,var(--a));text-transform:uppercase;max-width:100%;overflow:hidden}
+.rev-game-tag img{width:16px;height:16px;object-fit:cover;border-radius:2px}
+.rev-text{font-size:.9rem;color:var(--tx2);line-height:1.6;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.rev-bottom{margin-top:.9rem;display:flex;align-items:center;justify-content:space-between}
+.rev-helpful{font-family:'Share Tech Mono',monospace;font-size:.58rem;letter-spacing:1px;color:var(--tx2)}
+.rev-verified{font-family:'Share Tech Mono',monospace;font-size:.58rem;letter-spacing:1px;color:#00ff88;display:flex;align-items:center;gap:4px}
+.rev-new-notif{position:fixed;bottom:2rem;left:2rem;background:var(--surf);border:1px solid var(--a);padding:.9rem 1.2rem;z-index:1500;display:flex;align-items:center;gap:12px;transform:translateX(-120%);transition:transform .4s cubic-bezier(.22,1,.36,1);max-width:280px;box-shadow:0 8px 32px rgba(0,0,0,.4)}
+.rev-new-notif.show{transform:translateX(0)}
+.rev-notif-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;color:#fff;flex-shrink:0}
+.rev-notif-title{font-family:'Share Tech Mono',monospace;font-size:.6rem;letter-spacing:2px;color:var(--a);text-transform:uppercase;margin-bottom:2px}
+.rev-notif-text{font-size:.82rem;color:var(--tx2);line-height:1.4}
+.rev-overall{margin:2.5rem 5vw 0;background:var(--surf);border:1px solid var(--br);padding:2rem;display:grid;grid-template-columns:auto 1fr auto;gap:2rem;align-items:center}
+.rev-big-score{text-align:center}
+.rev-score-num{font-family:'Bebas Neue',sans-serif;font-size:4.5rem;color:var(--a);line-height:1;text-shadow:0 0 30px rgba(0,229,255,.5)}
+.rev-score-stars{color:#ffb800;font-size:1.2rem;letter-spacing:3px;margin-top:4px}
+.rev-score-label{font-family:'Share Tech Mono',monospace;font-size:.6rem;letter-spacing:2px;color:var(--tx2);margin-top:6px;text-transform:uppercase}
+.rev-bars{display:flex;flex-direction:column;gap:.5rem}
+.rev-bar-row{display:flex;align-items:center;gap:10px}
+.rev-bar-label{font-family:'Share Tech Mono',monospace;font-size:.62rem;letter-spacing:1px;color:var(--tx2);width:20px;text-align:right;flex-shrink:0}
+.rev-bar-track{flex:1;height:6px;background:var(--bg2);border:1px solid var(--br);overflow:hidden}
+.rev-bar-fill{height:100%;background:linear-gradient(90deg,var(--a),var(--a2));animation:barGrow .8s ease both}
+.rev-bar-fill.s5{width:62%}.rev-bar-fill.s4{width:24%}.rev-bar-fill.s3{width:9%}.rev-bar-fill.s2{width:3%}.rev-bar-fill.s1{width:2%}
+@keyframes barGrow{from{width:0}to{width:inherit}}
+.rev-bar-pct{font-family:'Share Tech Mono',monospace;font-size:.6rem;color:var(--tx2);width:32px;flex-shrink:0}
+.rev-total-info{text-align:right}
+.rev-total-num{font-family:'Bebas Neue',sans-serif;font-size:2.5rem;color:var(--tx);letter-spacing:2px;line-height:1}
+.rev-total-label{font-family:'Share Tech Mono',monospace;font-size:.62rem;letter-spacing:2px;color:var(--tx2);text-transform:uppercase;margin-top:4px}
+.rev-total-badge{display:inline-block;background:rgba(0,255,136,.1);border:1px solid rgba(0,255,136,.3);color:#00ff88;font-family:'Share Tech Mono',monospace;font-size:.6rem;letter-spacing:2px;padding:3px 10px;margin-top:.75rem;text-transform:uppercase}
+@media(max-width:700px){.rev-overall{grid-template-columns:1fr;gap:1.5rem;text-align:center}.rev-total-info{text-align:center}}
+/* ANIMATIONS */
+@keyframes fup{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fin{from{opacity:0}to{opacity:1}}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+/* RESPONSIVE */
+@media(max-width:900px){nav ul{display:none}.hburg{display:flex}.hero-vis{display:none}.hero-c{max-width:100%}.fcard{grid-template-columns:1fr}.fimg{height:240px}.fg2{grid-template-columns:1fr 1fr}.stp::after{display:none}.mi{grid-template-columns:1fr}.mcw{height:220px}.mcover{min-height:unset;height:100%}}
+@media(max-width:600px){.sbar{gap:0}.si{min-width:80px;padding:.75rem .5rem}.sn{font-size:1.6rem}.fi{padding:1.5rem}.fg2{grid-template-columns:1fr;gap:2rem}.fbot{flex-direction:column;align-items:flex-start}.stp-g{grid-template-columns:1fr 1fr}.pmg{grid-template-columns:1fr 1fr}.fr{grid-template-columns:1fr}}
+@media(max-width:400px){.stp-g{grid-template-columns:1fr}.gmg{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="covl" id="covl" onclick="closeCart()"></div>
+<!-- GAME DETAIL MODAL -->
+<div class="movl" id="movl" onclick="closeMod(event)">
+  <div class="modal" id="modal" onclick="event.stopPropagation()">
+    <div id="modal-inner"></div>
+  </div>
+</div>
+<!-- PAYMENT MODAL -->
+<div class="pmovl" id="pmovl" onclick="closePay(event)">
+  <div class="pmod" id="pmod" onclick="event.stopPropagation()">
+    <div class="ph"><h3>CHECKOUT</h3><button class="pcls" onclick="closePay()">✕</button></div>
+    <div class="pb" id="pb"></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<div id="tOvl"></div>
+<!-- CART -->
+<div class="cart-d" id="cart-d">
+  <div class="cart-h"><h3>YOUR CART</h3><button class="ccls" onclick="closeCart()">✕</button></div>
+  <div class="cart-items" id="cart-items"><div class="ce"><span class="ce-i">💿</span><p>YOUR CART IS EMPTY</p></div></div>
+  <div class="cart-f"><div class="ctr"><span class="ctl">Total</span><span class="ctv" id="ctv">₹0</span></div><button class="chk" onclick="openPay()">PROCEED TO CHECKOUT →</button></div>
+</div>
+<!-- AUTH OVERLAY -->
+<div class="auth-ovl" id="auth-ovl">
+  <div class="auth-backdrop" onclick="closeAuth()"></div>
+  <div class="auth-particles" id="auth-particles"></div>
+  <div class="auth-card">
+    <button class="auth-close" onclick="closeAuth()">✕</button>
+    <div style="background:var(--surf);border:1px solid var(--br);border-bottom:none">
+      <div class="auth-top">
+        <div class="auth-logo">
+          <svg class="auth-logo-mark" viewBox="0 0 40 40"><use href="#ng-mark"/></svg>
+          <span class="auth-logo-text">NIGHTGAMERS</span>
+        </div>
+        <div class="auth-tagline">Sign in to your account</div>
+        <div class="auth-tabs">
+          <button class="auth-tab active" id="tab-login" onclick="switchTab('login')">Login</button>
+          <button class="auth-tab" id="tab-register" onclick="switchTab('register')">Register</button>
+        </div>
+      </div>
+    </div>
+    <!-- OAuth loading screen -->
+    <div class="auth-body" id="oauth-loading-screen" style="display:none">
+      <div class="oauth-loading" style="display:flex">
+        <div class="oauth-spinner"></div>
+        <div class="oauth-msg" id="oauth-msg">Connecting to Google...</div>
+        <p style="font-size:.8rem;color:var(--tx2);margin-top:.75rem;font-family:'Rajdhani',sans-serif">You will be redirected shortly</p>
+      </div>
+    </div>
+    <!-- Login form -->
+    <div class="auth-body" id="auth-login-body">
+      <!-- Social logins -->
+      <button class="social-auth-btn google-btn" onclick="oauthLogin('google')">
+        <span class="social-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg></span>
+        Continue with Google
+      </button>
+      <button class="social-auth-btn outlook-btn" onclick="oauthLogin('outlook')">
+        <span class="social-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M7.462 0H0v7.19l3.075 1.77L7.462 6.4V0z" fill="#1976D2"/><path d="M7.462 0h8.615v3.662H7.462V0z" fill="#1565C0"/><path d="M16.077 0H24v7.19l-7.923 1.016V0z" fill="#1E88E5"/><path d="M0 7.19h7.462v4.038L0 12.381V7.19z" fill="#1E88E5"/><path d="M16.077 7.19H24v4.038l-7.923 1.153V7.19z" fill="#1976D2"/><path d="M7.462 7.19h8.615v4.577l-8.615-.246V7.19z" fill="#2196F3"/><path d="M0 12.381h7.462V18.1H0v-5.719z" fill="#1565C0"/><path d="M7.462 11.52h8.615l.923.87-9.538.61V11.52z" fill="#1976D2"/><path d="M7.462 13H24v4l-16.538 3V13z" fill="#42A5F5"/><path d="M0 18.1h7.462V24H0v-5.9z" fill="#1E88E5"/><path d="M7.462 20h16.077l.461-2H7.462v2z" fill="#1565C0"/><path d="M7.462 24H24V20H7.462v4z" fill="#1976D2"/></svg></span>
+        Continue with Outlook / Microsoft
+      </button>
+      <button class="social-auth-btn github-btn" onclick="oauthLogin('github')">
+        <span class="social-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg></span>
+        Continue with GitHub
+      </button>
+      <div class="or-divider">or sign in with email</div>
+      <div class="auth-err" id="login-err"></div>
+      <div class="auth-fg"><label class="auth-fl">Email Address</label><input class="auth-in" id="li-email" type="email" placeholder="you@example.com"></div>
+      <div class="auth-fg"><label class="auth-fl">Password</label><input class="auth-in" id="li-pw" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <button class="auth-submit" onclick="doLogin()">SIGN IN →</button>
+      <div class="auth-foot">No account? <span onclick="switchTab('register')">Create one free</span></div>
+    </div>
+    <!-- Register form -->
+    <div class="auth-body" id="auth-register-body" style="display:none">
+      <button class="social-auth-btn google-btn" onclick="oauthLogin('google')">
+        <span class="social-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg></span>
+        Sign up with Google
+      </button>
+      <button class="social-auth-btn outlook-btn" onclick="oauthLogin('outlook')">
+        <span class="social-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M7.462 0H0v7.19l3.075 1.77L7.462 6.4V0z" fill="#1976D2"/><path d="M7.462 0h8.615v3.662H7.462V0z" fill="#1565C0"/><path d="M16.077 0H24v7.19l-7.923 1.016V0z" fill="#1E88E5"/><path d="M0 7.19h7.462v4.038L0 12.381V7.19z" fill="#1E88E5"/><path d="M16.077 7.19H24v4.038l-7.923 1.153V7.19z" fill="#1976D2"/><path d="M7.462 7.19h8.615v4.577l-8.615-.246V7.19z" fill="#2196F3"/><path d="M0 12.381h7.462V18.1H0v-5.719z" fill="#1565C0"/><path d="M7.462 11.52h8.615l.923.87-9.538.61V11.52z" fill="#1976D2"/><path d="M7.462 13H24v4l-16.538 3V13z" fill="#42A5F5"/><path d="M0 18.1h7.462V24H0v-5.9z" fill="#1E88E5"/><path d="M7.462 20h16.077l.461-2H7.462v2z" fill="#1565C0"/><path d="M7.462 24H24V20H7.462v4z" fill="#1976D2"/></svg></span>
+        Sign up with Microsoft
+      </button>
+      <div class="or-divider">or create with email</div>
+      <div class="auth-err" id="reg-err"></div>
+      <div class="auth-fg"><label class="auth-fl">Full Name</label><input class="auth-in" id="rg-name" placeholder="Rahul Sharma"></div>
+      <div class="auth-fg"><label class="auth-fl">Email Address</label><input class="auth-in" id="rg-email" type="email" placeholder="you@example.com"></div>
+      <div class="auth-fg"><label class="auth-fl">Password</label><input class="auth-in" id="rg-pw" type="password" placeholder="Min. 6 characters" onkeydown="if(event.key==='Enter')doRegister()"></div>
+      <button class="auth-submit" onclick="doRegister()">CREATE ACCOUNT →</button>
+      <div class="auth-foot">Already have an account? <span onclick="switchTab('login')">Sign in</span></div>
+    </div>
+  </div>
+</div>
+<!-- WELCOME TOAST -->
+<div class="welcome-toast" id="welcome-toast">
+  <div class="wt-av" id="wt-av"></div>
+  <div class="wt-info"><div class="wt-name" id="wt-name"></div><div class="wt-sub">Signed in successfully</div></div>
+</div>
+<!-- SVG LOGO MARK (reused everywhere) -->
+<svg style="display:none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <symbol id="ng-mark" viewBox="0 0 40 40">
+      <!-- Moon crescent -->
+      <path d="M20 4 C10 4 4 11 4 20 C4 29 10 36 20 36 C14 33 10 27 10 20 C10 13 14 7 20 4Z" fill="url(#moon-fill)" opacity="0.9"/>
+      <!-- Controller body -->
+      <rect x="11" y="16" width="18" height="12" rx="4" fill="url(#ctrl-fill)"/>
+      <!-- D-pad left nub -->
+      <rect x="13" y="20" width="5" height="2" rx="1" fill="rgba(255,255,255,0.4)"/>
+      <rect x="15" y="18" width="2" height="5" rx="1" fill="rgba(255,255,255,0.4)" style="transform:none"/>
+      <!-- ABXY dots -->
+      <circle cx="27" cy="19.5" r="1.2" fill="#ff2d78" opacity="0.9"/>
+      <circle cx="29.2" cy="21.5" r="1.2" fill="#a78bfa" opacity="0.9"/>
+      <circle cx="27" cy="23.5" r="1.2" fill="#00e5ff" opacity="0.9"/>
+      <circle cx="24.8" cy="21.5" r="1.2" fill="#00ff88" opacity="0.9"/>
+      <!-- Stars around -->
+      <circle cx="33" cy="8" r="1.2" fill="#a78bfa" opacity="0.8"/>
+      <circle cx="28" cy="6" r="0.8" fill="#00e5ff" opacity="0.6"/>
+      <circle cx="35" cy="14" r="0.7" fill="#ff2d78" opacity="0.7"/>
+      <!-- Gradient defs -->
+      <defs>
+        <linearGradient id="moon-fill" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#a78bfa"/>
+          <stop offset="100%" stop-color="#6d28d9"/>
+        </linearGradient>
+        <linearGradient id="ctrl-fill" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#1e1040"/>
+          <stop offset="100%" stop-color="#0d1526"/>
+        </linearGradient>
+      </defs>
+    </symbol>
+  </defs>
+</svg>
+<!-- PROFILE PANEL -->
+<div class="prof-ovl" id="prof-ovl">
+  <div class="prof-backdrop" onclick="closeProfile()"></div>
+  <div class="prof-panel" id="prof-panel">
+    <div class="prof-header">
+      <div class="prof-header-l">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        <span class="prof-header-title">MY PROFILE</span>
+      </div>
+      <button class="prof-close" onclick="closeProfile()">✕</button>
+    </div>
+    <div class="prof-tabs">
+      <button class="prof-tab active" id="ptab-overview" onclick="switchProfTab('overview')">Overview</button>
+      <button class="prof-tab" id="ptab-edit" onclick="switchProfTab('edit')">Edit Profile</button>
+      <button class="prof-tab" id="ptab-security" onclick="switchProfTab('security')">Security</button>
+      <button class="prof-tab" id="ptab-notifications" onclick="switchProfTab('notifications')">Notifications</button>
+    </div>
+    <div class="prof-body" id="prof-body"></div>
+    <div class="prof-save-bar" id="prof-save-bar" style="display:none">
+      <button class="prof-discard-btn" onclick="discardProfileChanges()">DISCARD</button>
+      <button class="prof-save-btn" onclick="saveProfile()">SAVE CHANGES →</button>
+      <span class="prof-save-status" id="prof-save-status">✓ SAVED</span>
+    </div>
+  </div>
+</div>
+<!-- REVIEW NOTIFICATION -->
+<div class="rev-new-notif" id="rev-notif">
+  <div class="rev-notif-av" id="rev-notif-av"></div>
+  <div>
+    <div class="rev-notif-title" id="rev-notif-title"></div>
+    <div class="rev-notif-text" id="rev-notif-text"></div>
+  </div>
+</div>
+<!-- NAV -->
+<nav>
+  <span class="logo" onclick="goHome()">
+    <svg class="logo-mark" viewBox="0 0 40 40"><use href="#ng-mark"/></svg>
+    <span class="logo-text">
+      <span class="logo-main">NIGHTGAMERS</span>
+      <span class="logo-sub">PC · Physical · Since 2020</span>
+    </span>
+  </span>
+  <ul>
+    <li><a onclick="goHome()" id="nav-home" class="active">Store</a></li>
+    <li><a onclick="goHome();setTimeout(()=>document.getElementById('gen-sec').scrollIntoView({behavior:'smooth'}),120)">Genres</a></li>
+    <li><a onclick="goHome();setTimeout(()=>document.getElementById('how-sec').scrollIntoView({behavior:'smooth'}),120)">How It Works</a></li>
+    <li><a onclick="goHome();setTimeout(()=>document.getElementById('footer').scrollIntoView({behavior:'smooth'}),120)">Support</a></li>
+  </ul>
+  <div class="nav-r">
+    <div id="nav-auth-area">
+      <button class="login-btn" onclick="openAuth()">SIGN IN</button>
+    </div>
+    <button class="cart-btn" onclick="openCart()">🛒 CART<span class="cn" id="cn" style="display:none">0</span></button>
+    <button class="hburg" onclick="toggleMob()"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="mobn" id="mobn">
+  <a onclick="goHome();toggleMob()">Store</a>
+  <a onclick="goHome();toggleMob();setTimeout(()=>document.getElementById('gen-sec').scrollIntoView({behavior:'smooth'}),120)">Genres</a>
+  <a onclick="goHome();toggleMob();setTimeout(()=>document.getElementById('how-sec').scrollIntoView({behavior:'smooth'}),120)">How It Works</a>
+</div>
+<div id="app">
+<!-- HOME PAGE -->
+<div class="page active" id="page-home" style="display:block">
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-c">
+      <div class="htag">Physical CD Collection</div>
+      <h1>OWN YOUR<br><span class="hl">GAME</span><br>FOREVER</h1>
+      <p>Premium PC game CDs delivered to your door. No subscriptions, no always-online DRM — just games you truly own.</p>
+      <div class="hcta">
+        <span class="bp" onclick="document.getElementById('gen-sec').scrollIntoView({behavior:'smooth'})">Browse Genres</span>
+        <span class="bo" onclick="document.getElementById('feat-sec').scrollIntoView({behavior:'smooth'})">Featured Title</span>
+      </div>
+    </div>
+    <div class="hero-vis"><div class="cd"><div class="cd-r"></div><div class="cd-r"></div><div class="cd-r"></div><div class="cd-c"></div></div></div>
+  </section>
+  <div class="sbar">
+    <div class="si"><div class="sn">500+</div><div class="slb">Titles</div></div>
+    <div class="si"><div class="sn">48H</div><div class="slb">Dispatch</div></div>
+    <div class="si"><div class="sn">4.9★</div><div class="slb">Rating</div></div>
+    <div class="si"><div class="sn">1M+</div><div class="slb">Orders</div></div>
+    <div class="si"><div class="sn">PAN-IN</div><div class="slb">Delivery</div></div>
+  </div>
+  <section id="gen-sec">
+    <div class="sh"><div><div class="ss">// Shop by Category</div><div class="st">BROWSE BY <span>GENRE</span></div></div></div>
+    <div class="gg" id="genCards"></div>
+  </section>
+  <div class="fsec" id="feat-sec">
+    <div class="sh"><div><div class="ss">// Game of the Month</div><div class="st">FEATURED <span>TITLE</span></div></div></div>
+    <div class="fcard">
+      <div class="fi">
+        <span class="fbdg">● GOTY WINNER</span>
+        <div class="ftit">ELDEN<br><span>RING</span></div>
+        <p class="fdesc">FromSoftware's masterpiece. A vast open world full of peril, mystery and breathtaking beauty awaits in the Lands Between. Face the demigods, shatter the Elden Ring.</p>
+        <div class="fmeta">
+          <div class="fm"><span class="fml">Genre</span><span class="fmv">Action RPG</span></div>
+          <div class="fm"><span class="fml">Developer</span><span class="fmv">FromSoftware</span></div>
+          <div class="fm"><span class="fml">Discs</span><span class="fmv">2-Disc Set</span></div>
+        </div>
+        <div class="fpr">₹2,499</div>
+        <button class="bp" onclick="addToCart(4)">ADD TO CART</button>
+      </div>
+      <div class="fimg"><img src="https://media.rawg.io/media/games/b54/b54598d1d5cc31899f4f0a7e3122a7b0.jpg" alt="Elden Ring" loading="lazy"></div>
+    </div>
+  </div>
+  <!-- ── ANIMATED REVIEWS SECTION ── -->
+  <section class="rev-section" id="reviews-sec">
+    <div class="sh">
+      <div><div class="ss">// What Players Are Saying</div><div class="st">PLAYER <span>REVIEWS</span></div></div>
+      <div class="rev-live-badge"><span class="rev-dot"></span>LIVE FEED</div>
+    </div>
+    <!-- marquee row 1 — scrolls left -->
+    <div class="rev-track-wrap rev-mask">
+      <div class="rev-track" id="rev-track-1"></div>
+    </div>
+    <!-- marquee row 2 — scrolls right -->
+    <div class="rev-track-wrap rev-mask" style="margin-top:1.2rem">
+      <div class="rev-track rev-track-rev" id="rev-track-2"></div>
+    </div>
+    <!-- overall rating bar -->
+    <div class="rev-overall" id="rev-overall"></div>
+  </section>
+  <section class="how-s" id="how-sec">
+    <div class="sh"><div><div class="ss">// Simple Process</div><div class="st">HOW IT <span>WORKS</span></div></div></div>
+    <div class="stp-g">
+      <div class="stp" style="animation-delay:0s"><div class="stp-n">01</div><span class="stp-i">🔍</span><div class="stp-t">Browse</div><p>Explore 500+ titles across 8 genres — new releases, classics, and bundles.</p></div>
+      <div class="stp" style="animation-delay:.1s"><div class="stp-n">02</div><span class="stp-i">🛒</span><div class="stp-t">Add to Cart</div><p>Select your games. No account needed to browse or buy.</p></div>
+      <div class="stp" style="animation-delay:.2s"><div class="stp-n">03</div><span class="stp-i">💳</span><div class="stp-t">Checkout</div><p>Pay via UPI, cards, net banking, or COD on select orders.</p></div>
+      <div class="stp" style="animation-delay:.3s"><div class="stp-n">04</div><span class="stp-i">📦</span><div class="stp-t">Delivered</div><p>CDs packed and dispatched within 48 hours. Pan-India delivery.</p></div>
+    </div>
+  </section>
+  <footer id="footer">
+    <div class="fg2">
+      <div class="fbrand">
+        <span class="logo" onclick="goHome()" style="display:inline-flex;margin-bottom:1rem">
+          <svg class="logo-mark" viewBox="0 0 40 40"><use href="#ng-mark"/></svg>
+          <span class="logo-text"><span class="logo-main">NIGHTGAMERS</span><span class="logo-sub">PC · Physical · Since 2020</span></span>
+        </span>
+        <p>India's premier destination for physical PC game CDs. NightGamers — where every gamer finds their next obsession, delivered to your door.</p>
+        <div class="slinks"><a href="#" class="sla">𝕏</a><a href="#" class="sla">f</a><a href="#" class="sla">▶</a><a href="#" class="sla">in</a></div>
+      </div>
+      <div class="fc"><h4>Genres</h4><ul id="footGenre"></ul></div>
+      <div class="fc"><h4>Store</h4><ul><li><a>New Releases</a></li><li><a>Best Sellers</a></li><li><a>On Sale</a></li><li><a>Pre-Orders</a></li></ul></div>
+      <div class="fc"><h4>Help</h4><ul><li><a>Track Order</a></li><li><a>Returns</a></li><li><a>FAQ</a></li><li><a>Contact Us</a></li></ul></div>
+    </div>
+    <div class="fbot"><p>© 2025 NightGamers — All Rights Reserved</p><div class="pics"><span class="pic">UPI</span><span class="pic">VISA</span><span class="pic">MC</span><span class="pic">COD</span><span class="pic">EMI</span></div></div>
+  </footer>
+</div>
+<!-- GENRE PAGE -->
+<div class="page" id="page-genre"></div>
+</div>
+<script>
+/* ═══════════════ DATA ═══════════════ */
+const GENRES=[
+  {id:'fps',name:'FPS',cls:'gc-fps',icon:'🔫',color:'#ff2d78',desc:'Heart-pounding first-person shooters. Twitch reflexes required.',count:62},
+  {id:'rpg',name:'RPG',cls:'gc-rpg',icon:'⚔️',color:'#7b2fff',desc:'Epic story-driven adventures with deep character progression.',count:84},
+  {id:'str',name:'Strategy',cls:'gc-str',icon:'🧠',color:'#00e5ff',desc:'Command armies, build empires, outsmart every opponent.',count:47},
+  {id:'spt',name:'Sports',cls:'gc-spt',icon:'⚽',color:'#00ff88',desc:'Football, cricket, racing and every sport you love.',count:38},
+  {id:'sim',name:'Simulation',cls:'gc-sim',icon:'🏙️',color:'#ffb800',desc:'Build, manage, and simulate entire worlds from scratch.',count:55},
+  {id:'adv',name:'Adventure',cls:'gc-adv',icon:'🗺️',color:'#ff6b35',desc:'Explore vast worlds, solve mysteries, unravel epic stories.',count:73},
+  {id:'rac',name:'Racing',cls:'gc-rac',icon:'🏎️',color:'#e040fb',desc:'Speed, drift, and dominate every track on Earth and beyond.',count:29},
+  {id:'hor',name:'Horror',cls:'gc-hor',icon:'👻',color:'#ff1744',desc:'Survive the darkness. Not for the faint-hearted.',count:22},
+];
+const GAMES=[
+  {id:1,title:'CALL OF DUTY: MW III',dev:'Infinity Ward',pub:'Activision',genre:'fps',year:2023,price:3499,orig:4499,rating:4.6,rev:18420,badge:'hot',
+   img:'https://media.rawg.io/media/games/6fc/6fcbc52b10bff5a3adfbfc3a45577da5.jpg',
+   screens:['https://media.rawg.io/media/screenshots/61f/61f2e43d745bb7f71dfc57e2cfc55d4c.jpg','https://media.rawg.io/media/screenshots/0e5/0e57e4b3f9b6a9f5be9a75a3e3b48d25.jpg'],
+   desc:'The next chapter in the Modern Warfare saga. Open-world campaign with unprecedented freedom, 16 classic Multiplayer maps, and a massive Zombies experience. The most complete Call of Duty package ever made.',
+   discs:'2 Discs',size:'130 GB',players:'1-150 Online',
+   tags:['Shooter','Military','Multiplayer','Zombies','Online'],
+   req:{OS:'Windows 10/11 64-bit',CPU:'Intel Core i5-6600K',RAM:'8 GB',GPU:'NVIDIA GTX 1060',Storage:'130 GB'}},
+  {id:2,title:'DOOM ETERNAL',dev:'id Software',pub:'Bethesda Softworks',genre:'fps',year:2020,price:1299,orig:1999,rating:4.8,rev:9870,badge:'sale',
+   img:'https://media.rawg.io/media/games/3ea/3ea3c9bbd940b6cb7f2139e42d3d443f.jpg',
+   screens:['https://media.rawg.io/media/screenshots/1e7/1e7d4a7cfe79d5c68e4e3bab17dfa5f5.jpg'],
+   desc:"Hell's armies have invaded Earth. Become the Slayer in an epic single-player campaign to conquer demons across dimensions. Push-forward combat at its absolute finest — never stop moving.",
+   discs:'2 Discs',size:'50 GB',players:'1 Player + Battlemode',
+   tags:['Action','Fast-Paced','Gore','Dark','Single-player'],
+   req:{OS:'Windows 7/10 64-bit',CPU:'Intel Core i5-8600K',RAM:'8 GB',GPU:'NVIDIA GTX 1060 6GB',Storage:'50 GB'}},
+  {id:3,title:'COUNTER-STRIKE 2',dev:'Valve',pub:'Valve',genre:'fps',year:2023,price:999,orig:null,rating:4.5,rev:45000,badge:'new',
+   img:'https://media.rawg.io/media/games/736/73619d301f0b8801bdbab84dac90da70.jpg',
+   screens:[],
+   desc:'CS2 marks a new era for the world\'s defining competitive shooter. Rebuilt with the Source 2 engine — sub-tick architecture, responsive smokes, and a complete audio and visual overhaul.',
+   discs:'1 Disc',size:'35 GB',players:'5v5 Competitive',
+   tags:['Tactical','Competitive','Multiplayer','eSports','Free-to-play'],
+   req:{OS:'Windows 10 64-bit',CPU:'Intel Core i5 750',RAM:'8 GB',GPU:'GTX 960 or better',Storage:'85 GB'}},
+  {id:4,title:'ELDEN RING',dev:'FromSoftware',pub:'Bandai Namco',genre:'rpg',year:2022,price:2499,orig:2999,rating:4.9,rev:52000,badge:'hot',
+   img:'https://media.rawg.io/media/games/b54/b54598d1d5cc31899f4f0a7e3122a7b0.jpg',
+   screens:['https://media.rawg.io/media/screenshots/0c0/0c0af4f8e8e1c17e53c14b4c6f7ea3ac.jpg','https://media.rawg.io/media/screenshots/e98/e985e45a05aae89e89a3a6e91fa2bbef.jpg'],
+   desc:"THE masterpiece of the decade. George R.R. Martin co-wrote the lore. FromSoftware built the world. Face demigods, discover secrets, and shape your own legend in the breathtaking Lands Between. GOTY 2022.",
+   discs:'2 Discs',size:'60 GB',players:'1 Player + Online Co-op',
+   tags:['Action RPG','Open World','Difficult','Fantasy','GOTY'],
+   req:{OS:'Windows 10/11 64-bit',CPU:'Intel Core i7-8700K',RAM:'12 GB',GPU:'NVIDIA GTX 1070 8GB',Storage:'60 GB'}},
+  {id:5,title:'THE WITCHER 3',dev:'CD Projekt Red',pub:'CD Projekt',genre:'rpg',year:2015,price:799,orig:1599,rating:4.9,rev:62100,badge:'sale',
+   img:'https://media.rawg.io/media/games/618/618c2031a07bbff6b4f611f10b6bcdbc.jpg',
+   screens:['https://media.rawg.io/media/screenshots/1c4/1c4e7e7ca27e8f2a27b5b1daab92fd55.jpg'],
+   desc:'One of the greatest games ever made. As Geralt of Rivia, hunt monsters in a vast morally grey open world full of meaningful choices, unforgettable characters, and some of the best storytelling in gaming history.',
+   discs:'2 Discs',size:'50 GB',players:'1 Player',
+   tags:['RPG','Open World','Story-Rich','Fantasy','Mature'],
+   req:{OS:'Windows 7/8.1/10 64-bit',CPU:'Intel Core i5-2500K',RAM:'6 GB',GPU:'NVIDIA GTX 660',Storage:'50 GB'}},
+  {id:6,title:"BALDUR'S GATE 3",dev:'Larian Studios',pub:'Larian Studios',genre:'rpg',year:2023,price:3499,orig:null,rating:5.0,rev:27800,badge:'hot',
+   img:'https://media.rawg.io/media/games/699/69907ecf13f172e9e144069769c3be73.jpg',
+   screens:['https://media.rawg.io/media/screenshots/a7c/a7ca4bc7abbc4cc5da97e290d729e1cf.jpg'],
+   desc:"Gather your party. The Forgotten Realms await. Over 174 hours of deeply reactive story content. Every choice matters. Play alone or with up to 3 friends in full co-op. The greatest RPG ever made — period.",
+   discs:'4 Discs',size:'150 GB',players:'1-4 Co-op',
+   tags:['RPG','Turn-Based','Co-op','Fantasy','GOTY'],
+   req:{OS:'Windows 10 64-bit',CPU:'Intel i7-8700K',RAM:'16 GB',GPU:'NVIDIA GTX 1060 6GB',Storage:'150 GB'}},
+  {id:7,title:'CIVILIZATION VI',dev:'Firaxis Games',pub:'2K Games',genre:'str',year:2016,price:699,orig:2999,rating:4.7,rev:15600,badge:'sale',
+   img:'https://media.rawg.io/media/games/4e6/4e6e8e7f50c237d76f38f3c885dae3d2.jpg',
+   screens:[],
+   desc:'Build an empire to stand the test of time. Explore, expand, exploit and exterminate in this legendary turn-based strategy game. Now featuring 8 expansions worth of content at a historic low price.',
+   discs:'1 Disc',size:'15 GB',players:'1-12 Multiplayer',
+   tags:['Strategy','Turn-Based','Historical','4X','Multiplayer'],
+   req:{OS:'Windows 7/8.1/10 64-bit',CPU:'Intel Core i3-4340',RAM:'8 GB',GPU:'1 GB VRAM',Storage:'17 GB'}},
+  {id:8,title:'TOTAL WAR: WARHAMMER III',dev:'Creative Assembly',pub:'SEGA',genre:'str',year:2022,price:2499,orig:3999,rating:4.5,rev:8900,badge:null,
+   img:'https://media.rawg.io/media/games/f87/f87457e8347484033cb34cde6101d08d.jpg',
+   screens:[],
+   desc:'The most ambitious Total War yet. Command the forces of Chaos, Kislev, Grand Cathay or four Chaos factions in an epic world-scale conflict. Massive battles, deep strategy, astonishing fantasy warfare.',
+   discs:'2 Discs',size:'120 GB',players:'1-8 Multiplayer',
+   tags:['Strategy','Fantasy','Turn-Based','Real-Time','Epic'],
+   req:{OS:'Windows 10 64-bit',CPU:'Intel Core i5-6600K',RAM:'8 GB',GPU:'NVIDIA GTX 1070 8GB',Storage:'120 GB'}},
+  {id:9,title:'EA FC 25',dev:'EA Sports',pub:'Electronic Arts',genre:'spt',year:2024,price:3999,orig:4999,rating:4.2,rev:29000,badge:'new',
+   img:'https://media.rawg.io/media/games/5eb/5eb49eb2fa0738fdb5bacea557b1bc57.jpg',
+   screens:[],
+   desc:"The world's #1 football game is back with FC IQ tactical intelligence, real-world player data, and a completely overhauled Rush mode. Every dribble, every save, every goal feels real.",
+   discs:'1 Disc',size:'50 GB',players:'1-22 Online',
+   tags:['Sports','Football','Multiplayer','Online','Annual'],
+   req:{OS:'Windows 10 64-bit',CPU:'Intel Core i5-6600K',RAM:'8 GB',GPU:'NVIDIA GTX 1050 Ti',Storage:'100 GB'}},
+  {id:10,title:'NBA 2K25',dev:'Visual Concepts',pub:'2K Games',genre:'spt',year:2024,price:3499,orig:4499,rating:4.3,rev:11200,badge:'new',
+   img:'https://media.rawg.io/media/games/456/456dea5e1c7e3cd07060601f68f6aa07.jpg',
+   screens:[],
+   desc:'The most authentic NBA simulation ever. Featuring ProPLAY technology that translates real NBA footage directly into gameplay. Build your MyCAREER legend from the ground up.',
+   discs:'2 Discs',size:'150 GB',players:'1-10 Online',
+   tags:['Sports','Basketball','Simulation','Multiplayer','Career'],
+   req:{OS:'Windows 10 64-bit',CPU:'Intel Core i5-4430',RAM:'8 GB',GPU:'NVIDIA GTX 1060 6GB',Storage:'150 GB'}},
+  {id:11,title:'CITIES: SKYLINES II',dev:'Colossal Order',pub:'Paradox Interactive',genre:'sim',year:2023,price:2999,orig:3499,rating:4.4,rev:7800,badge:'new',
+   img:'https://media.rawg.io/media/games/082/08202adec0dfb03e399a0ea9f7f5c9b1.jpg',
+   screens:[],
+   desc:'The next generation of city building is here. Create and manage your dream city with unprecedented depth and scale. Dynamic simulations, real economics, living citizens — build smarter.',
+   discs:'2 Discs',size:'60 GB',players:'1 Player',
+   tags:['Simulation','City Building','Management','Relaxing','Creative'],
+   req:{OS:'Windows 10 64-bit',CPU:'Intel Core i7-6700K',RAM:'16 GB',GPU:'NVIDIA GTX 970',Storage:'60 GB'}},
+  {id:12,title:'MICROSOFT FLIGHT SIM 2024',dev:'Asobo Studio',pub:'Microsoft',genre:'sim',year:2024,price:4999,orig:null,rating:4.7,rev:9200,badge:'new',
+   img:'https://media.rawg.io/media/games/d87/d87a1e0ca29c7ad265b82f20e11eab99.jpg',
+   screens:[],
+   desc:'The world is your runway. Fly over photo-realistic recreations of the entire planet Earth. From bush planes to commercial jets — the most authentic flight simulation experience ever created.',
+   discs:'10 Discs',size:'250 GB',players:'1 Player + Multiplayer',
+   tags:['Simulation','Flight','Realistic','Relaxing','Beautiful'],
+   req:{OS:'Windows 10/11 64-bit',CPU:'Intel Core i5-8400',RAM:'16 GB',GPU:'NVIDIA GTX 970',Storage:'250 GB'}},
+  {id:13,title:'RED DEAD REDEMPTION 2',dev:'Rockstar Games',pub:'Rockstar Games',genre:'adv',year:2019,price:1999,orig:2999,rating:4.9,rev:47000,badge:'sale',
+   img:'https://media.rawg.io/media/games/511/5118aff5091cb3efec399c808f8c598f.jpg',
+   screens:['https://media.rawg.io/media/screenshots/72a/72a29d0de63b2ef1ce04da5b3ede9f7d.jpg'],
+   desc:"Rockstar's magnum opus. An epic tale of life in America at the dawn of the modern age. As outlaw Arthur Morgan, navigate a world on the brink of change. The most immersive open world ever built.",
+   discs:'3 Discs',size:'150 GB',players:'1 Player + Online',
+   tags:['Action','Adventure','Open World','Western','Story-Rich'],
+   req:{OS:'Windows 10 64-bit',CPU:'Intel Core i7-4770K',RAM:'12 GB',GPU:'NVIDIA GTX 1060 6GB',Storage:'150 GB'}},
+  {id:14,title:'ALAN WAKE 2',dev:'Remedy Entertainment',pub:'Epic Games',genre:'adv',year:2023,price:2499,orig:2999,rating:4.7,rev:8900,badge:'new',
+   img:'https://media.rawg.io/media/games/a6c/a6ccd34125c594abf1a9c9821b9a715d.jpg',
+   screens:[],
+   desc:'A psychological thriller unlike anything else in gaming. Alan Wake and FBI Agent Saga Anderson navigate parallel worlds of light and darkness in a mind-bending narrative masterpiece.',
+   discs:'2 Discs',size:'90 GB',players:'1 Player',
+   tags:['Horror','Thriller','Narrative','Atmospheric','Award-Winning'],
+   req:{OS:'Windows 10 64-bit',CPU:'Intel Core i5-8600K',RAM:'16 GB',GPU:'NVIDIA RTX 2060',Storage:'90 GB'}},
+  {id:15,title:'FORZA MOTORSPORT',dev:'Turn 10 Studios',pub:'Xbox Game Studios',genre:'rac',year:2023,price:3499,orig:3999,rating:4.5,rev:12300,badge:'new',
+   img:'https://media.rawg.io/media/games/ebb/ebb620951e3f37dbce6fbafb03f68c2e.jpg',
+   screens:[],
+   desc:"The most technically accurate racing simulation of its generation. Over 500 precisely modelled cars, 20 world-class tracks, and a completely redesigned physics engine. Feel every corner.",
+   discs:'2 Discs',size:'120 GB',players:'1-24 Online Racing',
+   tags:['Racing','Simulation','Cars','Multiplayer','Realistic'],
+   req:{OS:'Windows 10/11 64-bit',CPU:'Intel Core i5-8600K',RAM:'8 GB',GPU:'NVIDIA GTX 970',Storage:'120 GB'}},
+  {id:16,title:'NEED FOR SPEED UNBOUND',dev:'Criterion Games',pub:'Electronic Arts',genre:'rac',year:2022,price:1499,orig:2999,rating:4.2,rev:7800,badge:'sale',
+   img:'https://media.rawg.io/media/games/5ec/5ecac9c7a5f8b3a71a9a2e1f4e3e9bd9.jpg',
+   screens:[],
+   desc:'Street racing reinvented. A bold visual style blending hyper-realistic cars with graffiti art. Hit the streets of Lakeshore City, evade the cops, and dominate the underground racing scene.',
+   discs:'1 Disc',size:'50 GB',players:'1-16 Online',
+   tags:['Racing','Action','Open World','Street','Style'],
+   req:{OS:'Windows 10 64-bit',CPU:'Intel Core i5-8600K',RAM:'16 GB',GPU:'NVIDIA GTX 1070',Storage:'50 GB'}},
+  {id:17,title:'RESIDENT EVIL 4 REMAKE',dev:'Capcom',pub:'Capcom',genre:'hor',year:2023,price:2499,orig:2999,rating:4.8,rev:19200,badge:'hot',
+   img:'https://media.rawg.io/media/games/ade/ade526e7a1e86eb4551da20de4d7ad16.jpg',
+   screens:['https://media.rawg.io/media/screenshots/acd/acd4f28ad91f1eab1df0e83ce56b4e38.jpg'],
+   desc:'The legendary survival horror game rebuilt from the ground up. Leon S. Kennedy fights through hordes of Las Plagas-infected villagers in this perfect blend of action and horror. A masterclass in remake design.',
+   discs:'2 Discs',size:'67 GB',players:'1 Player + Mercenaries',
+   tags:['Horror','Action','Survival','Third-Person','Remake'],
+   req:{OS:'Windows 10/11 64-bit',CPU:'Intel Core i7-8700K',RAM:'16 GB',GPU:'NVIDIA GTX 1080',Storage:'67 GB'}},
+  {id:18,title:'ALAN WAKE REMASTERED',dev:'Remedy Entertainment',pub:'Epic Games',genre:'hor',year:2021,price:999,orig:1499,rating:4.5,rev:8400,badge:'sale',
+   img:'https://media.rawg.io/media/games/a35/a35b2fcb07220cca4e0e7b36c297c11c.jpg',
+   screens:[],
+   desc:'The cult classic psychological thriller, fully remastered. Writer Alan Wake searches for his missing wife in the small town of Bright Falls — where darkness is alive and words can become reality.',
+   discs:'1 Disc',size:'30 GB',players:'1 Player',
+   tags:['Horror','Thriller','Narrative','Action','Atmospheric'],
+   req:{OS:'Windows 10 64-bit',CPU:'Intel Core i5-4690K',RAM:'8 GB',GPU:'NVIDIA GTX 1050 Ti',Storage:'30 GB'}},
+];
+
+let cart=[],curPage='home',transitioning=false,payStep=1,payMethod='upi',selBank='';
+
+/* ═══════════════ PROFILE SYSTEM ═══════════════ */
+const AVATAR_COLORS = ['#00e5ff','#ff2d78','#7b2fff','#ffb800','#00ff88','#ff6b35','#e040fb','#ff1744'];
+const SKILL_PRESETS = ['JavaScript','TypeScript','React','Vue','Node.js','Python','CSS','HTML','SQL','Git','Docker','AWS','Figma','REST APIs','GraphQL'];
+
+let profTab = 'overview';
+let profDraft = {};
+let profSkills = [];
+let profNotifs = {};
+
+function openProfile() {
+  if (!currentUser) { openAuth(); return; }
+  // Load saved profile extras from localStorage
+  const saved = JSON.parse(localStorage.getItem('ng_profile_' + currentUser.id) || '{}');
+  profDraft = {
+    name:     currentUser.name,
+    email:    currentUser.email,
+    phone:    saved.phone    || '',
+    location: saved.location || '',
+    bio:      saved.bio      || '',
+    jobTitle: saved.jobTitle || 'Senior Web Developer',
+    company:  saved.company  || '',
+    website:  saved.website  || '',
+    github:   saved.github   || '',
+    twitter:  saved.twitter  || '',
+    linkedin: saved.linkedin || '',
+    color:    currentUser.color || '#00e5ff',
+    dob:      saved.dob      || '',
+    gender:   saved.gender   || '',
+    language: saved.language || 'English',
+  };
+  profSkills = saved.skills || ['JavaScript','React','Node.js','CSS','Git'];
+  profNotifs = saved.notifs || {newGames:true, orders:true, reviews:false, promo:true, security:true};
+
+  document.getElementById('prof-ovl').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  switchProfTab('overview');
+}
+
+function closeProfile() {
+  const panel = document.getElementById('prof-panel');
+  panel.style.animation = 'panelOut .35s cubic-bezier(.55,0,1,.45) both';
+  setTimeout(() => {
+    document.getElementById('prof-ovl').classList.remove('open');
+    panel.style.animation = '';
+    document.body.style.overflow = '';
+  }, 340);
+}
+
+function switchProfTab(tab) {
+  profTab = tab;
+  document.querySelectorAll('.prof-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('ptab-' + tab)?.classList.add('active');
+  const saveBar = document.getElementById('prof-save-bar');
+  saveBar.style.display = (tab === 'edit' || tab === 'security' || tab === 'notifications') ? 'flex' : 'none';
+  renderProfBody();
+}
+
+function renderProfBody() {
+  const body = document.getElementById('prof-body');
+  if (profTab === 'overview')      body.innerHTML = renderProfOverview();
+  else if (profTab === 'edit')     body.innerHTML = renderProfEdit();
+  else if (profTab === 'security') body.innerHTML = renderProfSecurity();
+  else if (profTab === 'notifications') body.innerHTML = renderProfNotifs();
+}
+
+/* ── OVERVIEW TAB ── */
+function renderProfOverview() {
+  const saved = JSON.parse(localStorage.getItem('ng_profile_' + currentUser.id) || '{}');
+  const initials = profDraft.name.split(' ').map(n=>n[0]).join('').toUpperCase();
+  const provider = currentUser.provider || 'email';
+  const provMap = {google:'Google Account',outlook:'Microsoft Account',github:'GitHub Account',email:'Email & Password'};
+  const joinDate = new Date(parseInt(currentUser.id.replace('oauth-','').replace('local-','')) || Date.now());
+  const joinStr = isNaN(joinDate) ? 'Recently' : joinDate.toLocaleDateString('en-IN',{month:'long',year:'numeric'});
+  const activity = [
+    {icon:'🛒',bg:'rgba(0,229,255,.1)',title:'Added Elden Ring to cart',time:'2 hours ago'},
+    {icon:'⭐',bg:'rgba(255,184,0,.1)',title:'Reviewed Cyberpunk 2077',time:'Yesterday'},
+    {icon:'📦',bg:'rgba(0,255,136,.1)',title:'Order #NXG1A2B placed',time:'3 days ago'},
+    {icon:'❤️',bg:'rgba(255,45,120,.1)',title:'Wishlisted Baldur\'s Gate 3',time:'1 week ago'},
+    {icon:'🔐',bg:'rgba(123,47,255,.1)',title:'Profile updated',time:'2 weeks ago'},
+  ];
+  return `
+    <div class="prof-avatar-row">
+      <div class="prof-av-big" style="background:${profDraft.color}" onclick="switchProfTab('edit')" title="Edit profile">
+        ${initials}
+        <div class="av-edit-icon">✏️</div>
+      </div>
+      <div class="prof-av-info">
+        <div class="prof-av-name">${profDraft.name}</div>
+        <div class="prof-av-email">${profDraft.email}</div>
+        <div class="prof-av-badge">✓ ${provMap[provider]}</div>
+      </div>
+    </div>
+    <div class="prof-stats">
+      <div class="prof-stat-box" style="--psb-col:#00e5ff"><div class="prof-stat-val">12</div><div class="prof-stat-lbl">Games Owned</div></div>
+      <div class="prof-stat-box" style="--psb-col:#ff2d78"><div class="prof-stat-val">3</div><div class="prof-stat-lbl">Orders</div></div>
+      <div class="prof-stat-box" style="--psb-col:#00ff88"><div class="prof-stat-val">7</div><div class="prof-stat-lbl">Reviews</div></div>
+    </div>
+    <div class="prof-section">
+      <div class="prof-sec-title">👤 About</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem 2rem">
+        ${[
+          ['Job Title', profDraft.jobTitle || '—'],
+          ['Company',   profDraft.company  || '—'],
+          ['Location',  profDraft.location || '—'],
+          ['Member Since', joinStr],
+          ['Website',   profDraft.website ? `<a href="${profDraft.website}" target="_blank" style="color:var(--a);font-size:.88rem">${profDraft.website}</a>` : '—'],
+          ['Language',  profDraft.language || 'English'],
+        ].map(([l,v])=>`<div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:.58rem;letter-spacing:2px;color:var(--tx2);text-transform:uppercase;margin-bottom:3px">${l}</div>
+          <div style="font-size:.9rem;color:var(--tx)">${v}</div>
+        </div>`).join('')}
+      </div>
+      ${profDraft.bio ? `<div style="margin-top:1rem;padding:1rem;background:var(--surf);border:1px solid var(--br);font-size:.9rem;color:var(--tx2);line-height:1.6;border-left:3px solid var(--a)">${profDraft.bio}</div>` : ''}
+    </div>
+    <div class="prof-section">
+      <div class="prof-sec-title">🛠️ Skills & Tech</div>
+      <div class="skill-tags">${profSkills.map(s=>`<div class="skill-tag">${s}</div>`).join('')}</div>
+      ${!profSkills.length ? '<div style="color:var(--tx2);font-size:.85rem">No skills added yet. <span style="color:var(--a);cursor:pointer" onclick="switchProfTab(\'edit\')">Add skills →</span></div>' : ''}
+    </div>
+    <div class="prof-section">
+      <div class="prof-sec-title">⚡ Recent Activity</div>
+      <div>${activity.map(a=>`
+        <div class="activity-item">
+          <div class="act-icon" style="background:${a.bg}">${a.icon}</div>
+          <div class="act-info"><div class="act-title">${a.title}</div><div class="act-time">${a.time}</div></div>
+        </div>`).join('')}
+      </div>
+    </div>
+    ${(profDraft.github||profDraft.twitter||profDraft.linkedin) ? `
+    <div class="prof-section">
+      <div class="prof-sec-title">🔗 Social Links</div>
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap">
+        ${profDraft.github   ? `<a href="https://github.com/${profDraft.github}" target="_blank" style="display:flex;align-items:center;gap:6px;background:var(--surf);border:1px solid var(--br);padding:6px 14px;color:var(--tx);text-decoration:none;font-family:'Share Tech Mono',monospace;font-size:.65rem;letter-spacing:1px;transition:border-color .2s" onmouseenter="this.style.borderColor='var(--a)'" onmouseleave="this.style.borderColor='var(--br)'">⚫ GitHub</a>` : ''}
+        ${profDraft.twitter  ? `<a href="https://twitter.com/${profDraft.twitter}" target="_blank" style="display:flex;align-items:center;gap:6px;background:var(--surf);border:1px solid var(--br);padding:6px 14px;color:var(--tx);text-decoration:none;font-family:'Share Tech Mono',monospace;font-size:.65rem;letter-spacing:1px;transition:border-color .2s" onmouseenter="this.style.borderColor='var(--a)'" onmouseleave="this.style.borderColor='var(--br)'">𝕏 Twitter</a>` : ''}
+        ${profDraft.linkedin ? `<a href="https://linkedin.com/in/${profDraft.linkedin}" target="_blank" style="display:flex;align-items:center;gap:6px;background:var(--surf);border:1px solid var(--br);padding:6px 14px;color:var(--tx);text-decoration:none;font-family:'Share Tech Mono',monospace;font-size:.65rem;letter-spacing:1px;transition:border-color .2s" onmouseenter="this.style.borderColor='var(--a)'" onmouseleave="this.style.borderColor='var(--br)'">in LinkedIn</a>` : ''}
+      </div>
+    </div>` : ''}`;
+}
+
+/* ── EDIT TAB ── */
+function renderProfEdit() {
+  const initials = profDraft.name.split(' ').map(n=>n[0]).join('').toUpperCase();
+  const swatches = AVATAR_COLORS.map(c =>
+    `<div class="cp-swatch${c===profDraft.color?' active':''}" style="background:${c}" onclick="setAvatarColor('${c}')" title="${c}"></div>`
+  ).join('');
+  const skillHTML = profSkills.map((s,i) =>
+    `<div class="skill-tag">${s}<button class="skill-tag-rm" onclick="removeSkill(${i})" title="Remove">×</button></div>`
+  ).join('');
+  return `
+    <!-- Avatar & Color -->
+    <div class="prof-section">
+      <div class="prof-sec-title">🎨 Avatar & Color</div>
+      <div style="display:flex;align-items:center;gap:1.5rem;margin-bottom:1.2rem">
+        <div class="prof-av-big" style="background:${profDraft.color};width:64px;height:64px;font-size:1.5rem" id="prof-av-preview">${initials}</div>
+        <div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:.6rem;letter-spacing:2px;color:var(--tx2);text-transform:uppercase;margin-bottom:.6rem">Choose color</div>
+          <div class="color-picker-row">${swatches}</div>
+        </div>
+      </div>
+    </div>
+    <!-- Personal Info -->
+    <div class="prof-section">
+      <div class="prof-sec-title">👤 Personal Information</div>
+      <div class="pf-row">
+        <div class="pf-group"><label class="pf-label">Full Name *</label><input class="pf-input" id="pf-name" value="${profDraft.name}" oninput="profDraft.name=this.value;updateAvatarPreview()" placeholder="Your full name"></div>
+        <div class="pf-group"><label class="pf-label">Phone Number</label><input class="pf-input" id="pf-phone" value="${profDraft.phone}" oninput="profDraft.phone=this.value" placeholder="+91 98765 43210"></div>
+      </div>
+      <div class="pf-group"><label class="pf-label">Email Address</label><input class="pf-input" id="pf-email" value="${profDraft.email}" disabled><div class="pf-hint">Email cannot be changed. Contact support if needed.</div></div>
+      <div class="pf-row">
+        <div class="pf-group"><label class="pf-label">Date of Birth</label><input class="pf-input" id="pf-dob" type="date" value="${profDraft.dob}" oninput="profDraft.dob=this.value" style="color-scheme:dark"></div>
+        <div class="pf-group"><label class="pf-label">Gender</label>
+          <select class="pf-select" id="pf-gender" onchange="profDraft.gender=this.value">
+            <option value="" ${!profDraft.gender?'selected':''}>Prefer not to say</option>
+            <option value="male" ${profDraft.gender==='male'?'selected':''}>Male</option>
+            <option value="female" ${profDraft.gender==='female'?'selected':''}>Female</option>
+            <option value="non-binary" ${profDraft.gender==='non-binary'?'selected':''}>Non-binary</option>
+            <option value="other" ${profDraft.gender==='other'?'selected':''}>Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="pf-row">
+        <div class="pf-group"><label class="pf-label">Location / City</label><input class="pf-input" id="pf-location" value="${profDraft.location}" oninput="profDraft.location=this.value" placeholder="Mumbai, India"></div>
+        <div class="pf-group"><label class="pf-label">Language</label>
+          <select class="pf-select" id="pf-lang" onchange="profDraft.language=this.value">
+            ${['English','Hindi','Tamil','Telugu','Kannada','Malayalam','Bengali','Marathi'].map(l=>`<option ${profDraft.language===l?'selected':''}>${l}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div class="pf-group"><label class="pf-label">Bio</label><textarea class="pf-input" id="pf-bio" rows="3" oninput="profDraft.bio=this.value" placeholder="Tell the gaming community about yourself..." style="resize:vertical">${profDraft.bio}</textarea><div class="pf-hint">Max 250 characters · ${(profDraft.bio||'').length}/250</div></div>
+    </div>
+    <!-- Professional Info -->
+    <div class="prof-section">
+      <div class="prof-sec-title">💼 Professional Info</div>
+      <div class="pf-row">
+        <div class="pf-group"><label class="pf-label">Job Title</label><input class="pf-input" id="pf-title" value="${profDraft.jobTitle}" oninput="profDraft.jobTitle=this.value" placeholder="Senior Web Developer"></div>
+        <div class="pf-group"><label class="pf-label">Company / Studio</label><input class="pf-input" id="pf-company" value="${profDraft.company}" oninput="profDraft.company=this.value" placeholder="Acme Corp"></div>
+      </div>
+      <div class="pf-group"><label class="pf-label">Website / Portfolio</label><input class="pf-input" id="pf-website" value="${profDraft.website}" oninput="profDraft.website=this.value" placeholder="https://yourportfolio.com"></div>
+    </div>
+    <!-- Skills -->
+    <div class="prof-section">
+      <div class="prof-sec-title">🛠️ Skills & Technologies</div>
+      <div class="skill-tags" id="skill-tags-container">${skillHTML}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.75rem">${SKILL_PRESETS.filter(s=>!profSkills.includes(s)).slice(0,8).map(s=>`<div onclick="addSkillDirect('${s}')" style="background:var(--bg);border:1px dashed var(--br);padding:3px 10px;font-family:'Share Tech Mono',monospace;font-size:.58rem;letter-spacing:1px;color:var(--tx2);cursor:pointer;transition:all .2s" onmouseenter="this.style.borderColor='var(--a3)';this.style.color='#a78bfa'" onmouseleave="this.style.borderColor='var(--br)';this.style.color='var(--tx2)'">+ ${s}</div>`).join('')}</div>
+      <div class="skill-add-row">
+        <input class="skill-add-input" id="skill-input" placeholder="Add custom skill..." onkeydown="if(event.key==='Enter')addSkillFromInput()">
+        <button class="skill-add-btn" onclick="addSkillFromInput()">+ ADD</button>
+      </div>
+    </div>
+    <!-- Social Links -->
+    <div class="prof-section">
+      <div class="prof-sec-title">🔗 Social Links</div>
+      ${[
+        ['⚫','github','github.com/','GitHub username'],
+        ['𝕏','twitter','twitter.com/','Twitter / X handle'],
+        ['💼','linkedin','linkedin.com/in/','LinkedIn username'],
+      ].map(([ic,key,pre,ph])=>`
+        <div class="social-input-row">
+          <div class="social-platform-icon">${ic}</div>
+          <div style="flex:1">
+            <div style="font-family:'Share Tech Mono',monospace;font-size:.55rem;letter-spacing:1px;color:var(--tx2);margin-bottom:4px">${pre}</div>
+            <input class="pf-input" value="${profDraft[key]||''}" oninput="profDraft.${key}=this.value" placeholder="${ph}">
+          </div>
+        </div>`).join('')}
+    </div>`;
+}
+
+/* ── SECURITY TAB ── */
+function renderProfSecurity() {
+  return `
+    <div class="prof-section">
+      <div class="prof-sec-title">🔐 Change Password</div>
+      <div class="pf-group"><label class="pf-label">Current Password</label><input class="pf-input" id="pw-cur" type="password" placeholder="Enter current password"></div>
+      <div class="pf-group"><label class="pf-label">New Password</label>
+        <input class="pf-input" id="pw-new" type="password" placeholder="Min. 8 characters" oninput="checkPwStrength(this.value)">
+        <div class="pw-strength" id="pw-strength"><div class="pw-seg" id="ps1"></div><div class="pw-seg" id="ps2"></div><div class="pw-seg" id="ps3"></div><div class="pw-seg" id="ps4"></div></div>
+        <div class="pf-hint" id="pw-hint">Use uppercase, lowercase, numbers and symbols</div>
+      </div>
+      <div class="pf-group"><label class="pf-label">Confirm New Password</label><input class="pf-input" id="pw-conf" type="password" placeholder="Repeat new password"></div>
+    </div>
+    <div class="prof-section">
+      <div class="prof-sec-title">🛡️ Two-Factor Authentication</div>
+      <div style="background:var(--surf);border:1px solid var(--br);padding:1.25rem;display:flex;align-items:center;justify-content:space-between;gap:1rem">
+        <div>
+          <div style="font-size:.95rem;font-weight:600;color:var(--tx);margin-bottom:3px">Authenticator App</div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:.6rem;letter-spacing:1px;color:var(--tx2)">Google Auth, Authy, or similar</div>
+        </div>
+        <label class="toggle-wrap"><input type="checkbox" onchange="showToast('2FA setup coming soon!')"><div class="toggle-slider"></div></label>
+      </div>
+      <div style="background:var(--surf);border:1px solid var(--br);border-top:none;padding:1.25rem;display:flex;align-items:center;justify-content:space-between;gap:1rem">
+        <div>
+          <div style="font-size:.95rem;font-weight:600;color:var(--tx);margin-bottom:3px">SMS Verification</div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:.6rem;letter-spacing:1px;color:var(--tx2)">Requires verified phone number</div>
+        </div>
+        <label class="toggle-wrap"><input type="checkbox" onchange="showToast('SMS 2FA coming soon!')"><div class="toggle-slider"></div></label>
+      </div>
+    </div>
+    <div class="prof-section">
+      <div class="prof-sec-title">📱 Active Sessions</div>
+      ${[
+        {device:'Chrome on Windows',loc:'Mumbai, India',time:'Active now',cur:true},
+        {device:'Safari on iPhone',loc:'Mumbai, India',time:'2 hours ago',cur:false},
+        {device:'Firefox on MacOS',loc:'Pune, India',time:'Yesterday',cur:false},
+      ].map(s=>`
+        <div style="background:var(--surf);border:1px solid var(--br);border-bottom:none;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem">
+          <div style="font-size:1.4rem">${s.device.includes('iPhone')?'📱':'💻'}</div>
+          <div style="flex:1">
+            <div style="font-size:.9rem;font-weight:600;color:var(--tx)">${s.device} ${s.cur?'<span style="background:rgba(0,255,136,.1);border:1px solid rgba(0,255,136,.3);color:#00ff88;font-family:\'Share Tech Mono\',monospace;font-size:.55rem;letter-spacing:1px;padding:1px 8px;margin-left:6px">CURRENT</span>':''}</div>
+            <div style="font-family:\'Share Tech Mono\',monospace;font-size:.58rem;letter-spacing:1px;color:var(--tx2);margin-top:2px">${s.loc} · ${s.time}</div>
+          </div>
+          ${!s.cur ? `<button onclick="showToast('Session revoked')" style="background:transparent;border:1px solid rgba(255,45,120,.3);color:var(--a2);font-family:\'Share Tech Mono\',monospace;font-size:.6rem;letter-spacing:1px;padding:5px 12px;cursor:pointer;text-transform:uppercase;transition:all .2s" onmouseenter="this.style.background='rgba(255,45,120,.1)'" onmouseleave="this.style.background='transparent'">REVOKE</button>` : ''}
+        </div>`).join('')}
+      <div style="background:var(--surf);border:1px solid var(--br)"></div>
+    </div>
+    <div class="prof-section">
+      <div class="prof-sec-title" style="color:var(--a2);border-color:rgba(255,45,120,.2)">⚠️ Danger Zone</div>
+      <div class="danger-zone">
+        <div class="danger-title">Delete Account</div>
+        <div class="danger-desc">Permanently delete your NightGamers account and all associated data. This action is irreversible.</div>
+        <button class="danger-btn" onclick="confirmDelete()">DELETE MY ACCOUNT</button>
+      </div>
+    </div>`;
+}
+
+/* ── NOTIFICATIONS TAB ── */
+function renderProfNotifs() {
+  const items = [
+    {key:'newGames',  title:'New Game Releases',       desc:'Be first to know about new titles in your favourite genres'},
+    {key:'orders',    title:'Order Updates',            desc:'Shipping, dispatch and delivery notifications'},
+    {key:'reviews',   title:'Review Replies',           desc:'When someone responds to your game reviews'},
+    {key:'promo',     title:'Deals & Promotions',       desc:'Flash sales, discounts and exclusive offers'},
+    {key:'security',  title:'Security Alerts',          desc:'Sign-in attempts, password changes — always recommended'},
+  ];
+  return `
+    <div class="prof-section">
+      <div class="prof-sec-title">🔔 Notification Preferences</div>
+      ${items.map(item=>`
+        <div class="notif-row">
+          <div class="notif-info">
+            <div class="notif-title">${item.title}</div>
+            <div class="notif-desc">${item.desc}</div>
+          </div>
+          <label class="toggle-wrap">
+            <input type="checkbox" ${profNotifs[item.key]?'checked':''} onchange="profNotifs['${item.key}']=this.checked">
+            <div class="toggle-slider"></div>
+          </label>
+        </div>`).join('')}
+    </div>
+    <div class="prof-section">
+      <div class="prof-sec-title">📧 Email Frequency</div>
+      ${['Instantly','Daily Digest','Weekly Summary','Never'].map(f=>`
+        <div style="display:flex;align-items:center;gap:10px;padding:.65rem 0;border-bottom:1px solid var(--br)">
+          <input type="radio" name="email-freq" id="ef-${f}" value="${f}" ${f==='Daily Digest'?'checked':''} style="accent-color:var(--a)">
+          <label for="ef-${f}" style="font-size:.9rem;color:var(--tx);cursor:pointer">${f}</label>
+        </div>`).join('')}
+    </div>`;
+}
+
+/* ── HELPERS ── */
+function setAvatarColor(color) {
+  profDraft.color = color;
+  document.querySelectorAll('.cp-swatch').forEach(s => s.classList.toggle('active', s.style.background === color));
+  const prev = document.getElementById('prof-av-preview');
+  if (prev) prev.style.background = color;
+}
+
+function updateAvatarPreview() {
+  const prev = document.getElementById('prof-av-preview');
+  if (prev) prev.textContent = (profDraft.name||'?').split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
+}
+
+function addSkillFromInput() {
+  const inp = document.getElementById('skill-input');
+  const val = (inp?.value || '').trim();
+  if (!val || profSkills.includes(val)) { showToast('Skill already added or empty'); return; }
+  profSkills.push(val);
+  if (inp) inp.value = '';
+  renderProfBody();
+}
+
+function addSkillDirect(skill) {
+  if (profSkills.includes(skill)) return;
+  profSkills.push(skill);
+  renderProfBody();
+}
+
+function removeSkill(idx) {
+  profSkills.splice(idx, 1);
+  renderProfBody();
+}
+
+function checkPwStrength(pw) {
+  const segs = [
+    document.getElementById('ps1'),document.getElementById('ps2'),
+    document.getElementById('ps3'),document.getElementById('ps4')
+  ];
+  const hint = document.getElementById('pw-hint');
+  let score = 0;
+  if (pw.length >= 8) score++;
+  if (/[A-Z]/.test(pw)) score++;
+  if (/[0-9]/.test(pw)) score++;
+  if (/[^A-Za-z0-9]/.test(pw)) score++;
+  const colors = ['#ff1744','#ff6b35','#ffb800','#00ff88'];
+  const labels = ['Too weak','Weak','Good','Strong 🔐'];
+  segs.forEach((s,i) => { if(s) s.style.background = i < score ? colors[score-1] : 'var(--br)'; });
+  if (hint && pw) hint.textContent = labels[score-1] || 'Too weak';
+}
+
+function confirmDelete() {
+  const inp = prompt('Type "DELETE" to permanently remove your account:');
+  if (inp === 'DELETE') {
+    localStorage.removeItem('nexus_current_user');
+    localStorage.removeItem('ng_profile_' + currentUser?.id);
+    currentUser = null;
+    closeProfile();
+    updateNavAuth();
+    showToast('Account deleted. We\'re sorry to see you go.');
+  } else if (inp !== null) {
+    showToast('Account deletion cancelled — wrong confirmation.');
+  }
+}
+
+function saveProfile() {
+  const saved = {
+    phone:    profDraft.phone,
+    location: profDraft.location,
+    bio:      profDraft.bio,
+    jobTitle: profDraft.jobTitle,
+    company:  profDraft.company,
+    website:  profDraft.website,
+    github:   profDraft.github,
+    twitter:  profDraft.twitter,
+    linkedin: profDraft.linkedin,
+    dob:      profDraft.dob,
+    gender:   profDraft.gender,
+    language: profDraft.language,
+    skills:   profSkills,
+    notifs:   profNotifs,
+  };
+  // Update name & color in current user
+  if (profDraft.name) {
+    currentUser.name     = profDraft.name;
+    currentUser.initials = profDraft.name.split(' ').map(n=>n[0]).join('').toUpperCase();
+  }
+  currentUser.color = profDraft.color;
+  localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
+  localStorage.setItem('ng_profile_' + currentUser.id, JSON.stringify(saved));
+  updateNavAuth();
+  // Handle password change
+  if (profTab === 'security') {
+    const newPw   = document.getElementById('pw-new')?.value;
+    const confPw  = document.getElementById('pw-conf')?.value;
+    if (newPw && newPw !== confPw) { showToast('Passwords do not match!'); return; }
+    if (newPw && newPw.length < 6) { showToast('Password must be at least 6 characters'); return; }
+    if (newPw) showToast('✓ Password updated successfully!');
+    else showToast('✓ Security settings saved!');
+  } else {
+    showToast('✓ Profile saved!');
+  }
+  const status = document.getElementById('prof-save-status');
+  if (status) { status.classList.add('show'); setTimeout(()=>status.classList.remove('show'),2500); }
+}
+
+function discardProfileChanges() {
+  const saved = JSON.parse(localStorage.getItem('ng_profile_' + currentUser?.id) || '{}');
+  profDraft = { name:currentUser.name, email:currentUser.email, color:currentUser.color||'#00e5ff', ...saved };
+  profSkills = saved.skills || ['JavaScript','React','Node.js','CSS','Git'];
+  renderProfBody();
+  showToast('Changes discarded');
+}
+
+/* ═══════════════ REVIEWS SYSTEM ═══════════════ */
+const REVIEW_DATA = [
+  // FPS
+  {game:'CALL OF DUTY: MW III',img:'https://media.rawg.io/media/games/6fc/6fcbc52b10bff5a3adfbfc3a45577da5.jpg',
+   name:'Arjun Mehta',initials:'AM',color:'#ff2d78',rating:5,verified:true,helpful:284,time:'2h ago',
+   text:'Absolutely insane. The open-world campaign is something I never knew I needed in a COD game. Zombies is back in full force. 100% worth the price on disc.'},
+  {game:'DOOM ETERNAL',img:'https://media.rawg.io/media/games/3ea/3ea3c9bbd940b6cb7f2139e42d3d443f.jpg',
+   name:'Priya Singh',initials:'PS',color:'#ff6b35',rating:5,verified:true,helpful:412,time:'5h ago',
+   text:'Never played anything that makes me feel this powerful. The push-forward combat loop is flawless. You CANNOT stop moving or you die. Peak FPS design.'},
+  {game:'COUNTER-STRIKE 2',img:'https://media.rawg.io/media/games/736/73619d301f0b8801bdbab84dac90da70.jpg',
+   name:'Vikram Nair',initials:'VN',color:'#00e5ff',rating:4,verified:true,helpful:198,time:'1d ago',
+   text:'Source 2 makes everything feel crisper. The smokes are genuinely revolutionary. Still the best competitive shooter ever made — and now it looks the part.'},
+  // RPG
+  {game:'ELDEN RING',img:'https://media.rawg.io/media/games/b54/b54598d1d5cc31899f4f0a7e3122a7b0.jpg',
+   name:'Sneha Reddy',initials:'SR',color:'#7b2fff',rating:5,verified:true,helpful:891,time:'3h ago',
+   text:"I've been gaming for 20 years and nothing has ever hit like this. The Lands Between is the most beautifully realised world I've ever explored. A masterpiece."},
+  {game:'THE WITCHER 3',img:'https://media.rawg.io/media/games/618/618c2031a07bbff6b4f611f10b6bcdbc.jpg',
+   name:'Rohit Kumar',initials:'RK',color:'#7b2fff',rating:5,verified:false,helpful:567,time:'6h ago',
+   text:'Still the gold standard for open-world RPGs almost a decade later. Hearts of Stone alone is better than most full games. The physical disc edition is pristine.'},
+  {game:"BALDUR'S GATE 3",img:'https://media.rawg.io/media/games/699/69907ecf13f172e9e144069769c3be73.jpg',
+   name:'Anjali Patel',initials:'AP',color:'#7b2fff',rating:5,verified:true,helpful:1024,time:'12h ago',
+   text:'174 hours in and I feel like I\'ve seen maybe 60% of the content. Every run is completely different. Larian has raised the bar for the entire industry. Perfect game.'},
+  // Strategy
+  {game:'CIVILIZATION VI',img:'https://media.rawg.io/media/games/4e6/4e6e8e7f50c237d76f38f3c885dae3d2.jpg',
+   name:'Dev Kumar',initials:'DK',color:'#00e5ff',rating:4,verified:true,helpful:334,time:'1d ago',
+   text:"'One more turn' is a real medical condition caused by this game. 200 hours in and I'm still discovering new strategies. The value at this price is absurd."},
+  {game:'TOTAL WAR: WARHAMMER III',img:'https://media.rawg.io/media/games/f87/f87457e8347484033cb34cde6101d08d.jpg',
+   name:'Karan Shah',initials:'KS',color:'#00e5ff',rating:5,verified:true,helpful:221,time:'2d ago',
+   text:'The sheer scale of the battles is breathtaking. Watching 5,000-unit armies clash with flying dragons and chaos demons is pure gaming poetry. Best in the series.'},
+  // Sports
+  {game:'EA FC 25',img:'https://media.rawg.io/media/games/5eb/5eb49eb2fa0738fdb5bacea557b1bc57.jpg',
+   name:'Rahul Sharma',initials:'RS',color:'#00ff88',rating:4,verified:true,helpful:445,time:'8h ago',
+   text:'FC IQ is a genuine game-changer for how teams move. Rush mode with friends is the most fun I\'ve had in years. Best football sim since PES 2013 era.'},
+  {game:'NBA 2K25',img:'https://media.rawg.io/media/games/456/456dea5e1c7e3cd07060601f68f6aa07.jpg',
+   name:'Nikhil Joshi',initials:'NJ',color:'#00ff88',rating:4,verified:false,helpful:178,time:'3d ago',
+   text:'ProPLAY is legitimately impressive. Watching Curry do his exact stepback three from real footage is wild. MyCareer story is actually decent this year too.'},
+  // Simulation
+  {game:'CITIES: SKYLINES II',img:'https://media.rawg.io/media/games/082/08202adec0dfb03e399a0ea9f7f5c9b1.jpg',
+   name:'Meera Iyer',initials:'MI',color:'#ffb800',rating:4,verified:true,helpful:267,time:'5h ago',
+   text:'The depth of simulation is incredible. Traffic AI, economic simulation, citizen routines — everything is interconnected in ways that feel real. Lost an entire weekend.'},
+  {game:'MICROSOFT FLIGHT SIM 2024',img:'https://media.rawg.io/media/games/d87/d87a1e0ca29c7ad265b82f20e11eab99.jpg',
+   name:'Suresh Pillai',initials:'SP',color:'#ffb800',rating:5,verified:true,helpful:389,time:'1d ago',
+   text:'Flew over my hometown and nearly cried. Every building, every road. The most technically impressive software I\'ve ever experienced. A genuine engineering marvel.'},
+  // Adventure
+  {game:'RED DEAD REDEMPTION 2',img:'https://media.rawg.io/media/games/511/5118aff5091cb3efec399c808f8c598f.jpg',
+   name:'Pooja Verma',initials:'PV',color:'#ff6b35',rating:5,verified:true,helpful:934,time:'4h ago',
+   text:"Arthur Morgan's story broke me in ways I wasn't prepared for. The most emotionally resonant game ever made. You don't play RDR2 — you live it. Physical copy is essential."},
+  {game:'ALAN WAKE 2',img:'https://media.rawg.io/media/games/a6c/a6ccd34125c594abf1a9c9821b9a715d.jpg',
+   name:'Aditya Rao',initials:'AR',color:'#ff6b35',rating:5,verified:true,helpful:412,time:'9h ago',
+   text:'The most audacious game design I\'ve ever seen. It breaks every rule and somehow works perfectly. The musical sequence alone is worth the price of admission.'},
+  // Racing
+  {game:'FORZA MOTORSPORT',img:'https://media.rawg.io/media/games/ebb/ebb620951e3f37dbce6fbafb03f68c2e.jpg',
+   name:'Sanjay Bhat',initials:'SB',color:'#e040fb',rating:5,verified:true,helpful:321,time:'6h ago',
+   text:'The car physics are in a completely different league. Every car genuinely feels unique — the weight, the grip, the sound. Turn 10 absolutely nailed it this time.'},
+  {game:'NEED FOR SPEED UNBOUND',img:'https://media.rawg.io/media/games/5ec/5ecac9c7a5f8b3a71a9a2e1f4e3e9bd9.jpg',
+   name:'Tanya Mishra',initials:'TM',color:'#e040fb',rating:4,verified:false,helpful:156,time:'2d ago',
+   text:'The art style is controversial but I love it. The actual driving feels crisp and satisfying. Police chases are intense. Best NFS since Hot Pursuit.'},
+  // Horror
+  {game:'RESIDENT EVIL 4 REMAKE',img:'https://media.rawg.io/media/games/ade/ade526e7a1e86eb4551da20de4d7ad16.jpg',
+   name:'Akash Gupta',initials:'AG',color:'#ff1744',rating:5,verified:true,helpful:678,time:'3h ago',
+   text:'Capcom somehow made a perfect game even better. Every scene is improved, expanded, or recontextualised. Luis is a legend now. Ashley is actually useful. 10/10.'},
+  {game:'ALAN WAKE REMASTERED',img:'https://media.rawg.io/media/games/a35/a35b2fcb07220cca4e0e7b36c297c11c.jpg',
+   name:'Divya Nair',initials:'DN',color:'#ff1744',rating:4,verified:true,helpful:203,time:'1d ago',
+   text:'Still holds up brilliantly. The atmosphere in Bright Falls is unmatched. A must-play before Alan Wake 2. Perfect value at this price on physical disc.'},
+];
+
+function buildRevCard(r) {
+  const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+  return `<div class="rev-card" style="--rev-col:${r.color}">
+    <div class="rev-card-glow"></div>
+    <div class="rev-card-top">
+      <div class="rev-avatar" style="background:${r.color}">${r.initials}</div>
+      <div class="rev-info">
+        <div class="rev-name">${r.name}</div>
+        <div class="rev-meta">${r.time}</div>
+      </div>
+      <div class="rev-stars">${stars.split('').map(s=>`<span class="rev-star" style="color:${s==='★'?'#ffb800':'rgba(255,255,255,.2)'}">★</span>`).join('')}</div>
+    </div>
+    <div class="rev-game-tag">
+      <img src="${r.img}" onerror="this.style.display='none'"> ${r.game}
+    </div>
+    <div class="rev-text">"${r.text}"</div>
+    <div class="rev-bottom">
+      <span class="rev-helpful">👍 ${r.helpful} found helpful</span>
+      ${r.verified ? '<span class="rev-verified">✓ Verified Purchase</span>' : '<span class="rev-helpful">Unverified</span>'}
+    </div>
+  </div>`;
+}
+
+function initReviews() {
+  const t1 = document.getElementById('rev-track-1');
+  const t2 = document.getElementById('rev-track-2');
+  if (!t1 || !t2) return;
+
+  // Split reviews into two rows, shuffle each
+  const shuffled = [...REVIEW_DATA].sort(() => Math.random() - 0.5);
+  const row1 = shuffled.slice(0, Math.ceil(shuffled.length / 2));
+  const row2 = shuffled.slice(Math.ceil(shuffled.length / 2));
+
+  // Duplicate for infinite seamless scroll
+  const html1 = [...row1, ...row1].map(buildRevCard).join('');
+  const html2 = [...row2, ...row2].map(buildRevCard).join('');
+  t1.innerHTML = html1;
+  t2.innerHTML = html2;
+
+  // Overall rating bar
+  const overall = document.getElementById('rev-overall');
+  if (overall) {
+    const totalReviews = REVIEW_DATA.reduce((s, r) => s + r.helpful, 0);
+    overall.innerHTML = `
+      <div class="rev-big-score">
+        <div class="rev-score-num">4.7</div>
+        <div class="rev-score-stars">★★★★★</div>
+        <div class="rev-score-label">Overall Score</div>
+      </div>
+      <div class="rev-bars">
+        <div class="rev-bar-row"><span class="rev-bar-label">5★</span><div class="rev-bar-track"><div class="rev-bar-fill s5"></div></div><span class="rev-bar-pct">62%</span></div>
+        <div class="rev-bar-row"><span class="rev-bar-label">4★</span><div class="rev-bar-track"><div class="rev-bar-fill s4"></div></div><span class="rev-bar-pct">24%</span></div>
+        <div class="rev-bar-row"><span class="rev-bar-label">3★</span><div class="rev-bar-track"><div class="rev-bar-fill s3"></div></div><span class="rev-bar-pct">9%</span></div>
+        <div class="rev-bar-row"><span class="rev-bar-label">2★</span><div class="rev-bar-track"><div class="rev-bar-fill s2"></div></div><span class="rev-bar-pct">3%</span></div>
+        <div class="rev-bar-row"><span class="rev-bar-label">1★</span><div class="rev-bar-track"><div class="rev-bar-fill s1"></div></div><span class="rev-bar-pct">2%</span></div>
+      </div>
+      <div class="rev-total-info">
+        <div class="rev-total-num">254K+</div>
+        <div class="rev-total-label">Total Reviews</div>
+        <div class="rev-total-badge">✓ Verified Store</div>
+      </div>`;
+  }
+
+  // Pop-in notification of "new reviews" every 8-14 seconds
+  startReviewNotifLoop();
+}
+
+let revNotifTimer;
+function startReviewNotifLoop() {
+  const notif = document.getElementById('rev-notif');
+  if (!notif) return;
+  let idx = 0;
+  const pool = [...REVIEW_DATA].sort(() => Math.random() - 0.5);
+
+  function showNext() {
+    const r = pool[idx % pool.length];
+    idx++;
+    document.getElementById('rev-notif-av').style.background = r.color;
+    document.getElementById('rev-notif-av').textContent = r.initials;
+    document.getElementById('rev-notif-title').textContent = 'New Review · ' + r.game;
+    document.getElementById('rev-notif-text').textContent = r.name + ' just left a ' + r.rating + '-star review';
+    notif.classList.add('show');
+    setTimeout(() => notif.classList.remove('show'), 3800);
+    revNotifTimer = setTimeout(showNext, 8000 + Math.random() * 6000);
+  }
+  revNotifTimer = setTimeout(showNext, 5000);
+}
+
+/* ═══════════════ INIT ═══════════════ */
+function init(){
+  renderGenreCards();
+  renderFooterGenres();
+  updateNavAuth();
+  initReviews();
+}
+
+/* ═══════════════ GENRE CARDS ═══════════════ */
+function renderGenreCards(){
+  document.getElementById('genCards').innerHTML=GENRES.map((g,i)=>`
+    <div class="gc ${g.cls}" style="animation-delay:${i*.07}s" onclick="showGenrePage('${g.id}')">
+      <span class="gico">${g.icon}</span>
+      <div class="gname">${g.name}</div>
+      <div class="gcnt">${g.count} TITLES</div>
+      <p class="gdesc">${g.desc}</p>
+      <div class="garr">EXPLORE ${g.name} →</div>
+    </div>`).join('');
+}
+function renderFooterGenres(){
+  document.getElementById('footGenre').innerHTML=GENRES.map(g=>`<li><a onclick="showGenrePage('${g.id}')">${g.icon} ${g.name}</a></li>`).join('');
+}
+
+/* ═══════════════ GENRE PAGE ═══════════════ */
+function showGenrePage(gid){
+  const g=GENRES.find(x=>x.id===gid);
+  const games=GAMES.filter(x=>x.genre===gid);
+  document.getElementById('page-genre').innerHTML=`
+    <div class="ghero">
+      <div class="ghero-bg" style="background:radial-gradient(ellipse 60% 70% at 80% 30%,${g.color}22 0%,transparent 65%),radial-gradient(ellipse 30% 40% at 10% 80%,${g.color}11 0%,transparent 60%)"></div>
+      <div class="ghero-c">
+        <button class="back-b" onclick="showPage('home')">← BACK TO STORE</button>
+        <span style="font-size:4rem;display:block;margin-bottom:1rem">${g.icon}</span>
+        <div style="font-family:'Share Tech Mono',monospace;font-size:.7rem;letter-spacing:4px;color:${g.color};text-transform:uppercase;margin-bottom:.5rem">PC GAME CDs</div>
+        <div class="ghtit" style="color:${g.color};text-shadow:0 0 40px ${g.color}55">${g.name}</div>
+        <p class="ghdesc">${g.desc} Browse our full ${g.name} collection — physical discs, no DRM, delivered pan-India.</p>
+        <div class="ghstats">
+          <div><div class="ghsn" style="color:${g.color}">${g.count}</div><div class="ghsl">Total Titles</div></div>
+          <div><div class="ghsn" style="color:${g.color}">${games.length}</div><div class="ghsl">In Stock Now</div></div>
+          <div><div class="ghsn" style="color:${g.color}">48H</div><div class="ghsl">Dispatch</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="fbar">
+      <span class="flbl">Sort:</span>
+      <button class="fb active" onclick="filterG('${gid}','all',this)">All</button>
+      <button class="fb" onclick="filterG('${gid}','new',this)">New</button>
+      <button class="fb" onclick="filterG('${gid}','sale',this)">On Sale</button>
+      <button class="fb" onclick="filterG('${gid}','hot',this)">Hot</button>
+      <button class="fb" onclick="filterG('${gid}','price-asc',this)">Price ↑</button>
+      <button class="fb" onclick="filterG('${gid}','price-desc',this)">Price ↓</button>
+      <button class="fb" onclick="filterG('${gid}','rating',this)">Top Rated</button>
+    </div>
+    <section style="padding-top:3rem">
+      <div class="sh"><div><div class="ss">// ${games.length} titles available</div><div class="st">${g.name} <span>TITLES</span></div></div></div>
+      <div class="gmg" id="genreGrid">${renderGameCards(games)}</div>
+    </section>
+    <section style="background:var(--bg2);border-top:1px solid var(--br);padding:4rem 5vw">
+      <div class="sh"><div><div class="ss">// Keep Exploring</div><div class="st">OTHER <span>GENRES</span></div></div></div>
+      <div class="gg">
+        ${GENRES.filter(x=>x.id!==gid).slice(0,4).map((og,i)=>`
+          <div class="gc ${og.cls}" style="animation-delay:${i*.07}s" onclick="showGenrePage('${og.id}')">
+            <span class="gico">${og.icon}</span>
+            <div class="gname">${og.name}</div>
+            <div class="gcnt">${og.count} TITLES</div>
+            <div class="garr">EXPLORE →</div>
+          </div>`).join('')}
+      </div>
+    </section>`;
+  showPage('genre');
+}
+
+function filterG(gid,filter,btn){
+  document.querySelectorAll('.fb').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  let games=GAMES.filter(x=>x.genre===gid);
+  if(filter==='new') games=games.filter(x=>x.badge==='new');
+  else if(filter==='sale') games=games.filter(x=>x.badge==='sale');
+  else if(filter==='hot') games=games.filter(x=>x.badge==='hot');
+  else if(filter==='price-asc') games=[...games].sort((a,b)=>a.price-b.price);
+  else if(filter==='price-desc') games=[...games].sort((a,b)=>b.price-a.price);
+  else if(filter==='rating') games=[...games].sort((a,b)=>b.rating-a.rating);
+  const grid=document.getElementById('genreGrid');
+  grid.style.opacity='0';grid.style.transform='translateY(10px)';
+  setTimeout(()=>{
+    grid.innerHTML=renderGameCards(games);
+    grid.style.transition='opacity .3s,transform .3s';
+    grid.style.opacity='1';grid.style.transform='';
+    restoreAddedBtns();
+  },180);
+}
+
+function renderGameCards(games){
+  if(!games.length) return `<div style="grid-column:1/-1;text-align:center;padding:4rem;color:var(--tx2);font-family:'Share Tech Mono',monospace;font-size:.75rem;letter-spacing:2px">NO TITLES FOUND</div>`;
+  return games.map((g,i)=>{
+    const disc=g.orig?Math.round((1-g.price/g.orig)*100):0;
+    return `<div class="gmc" style="animation-delay:${i*.06}s">
+      <div class="cw">
+        <img src="${g.img}" alt="${g.title}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="img-err" style="display:none"><span>💿</span>${g.title}</div>
+        ${g.badge?`<span class="bdg bdg-${g.badge}">${g.badge==='new'?'● NEW':g.badge==='sale'?'% SALE':'🔥 HOT'}</span>`:''}
+        <div class="cov">
+          <button class="qadd" onclick="event.stopPropagation();addToCart(${g.id})">QUICK ADD TO CART</button>
+          <button class="infob" onclick="event.stopPropagation();openModal(${g.id})">ⓘ VIEW DETAILS</button>
+        </div>
+      </div>
+      <div class="cb">
+        <div class="cgen">${g.genre.toUpperCase()}</div>
+        <div class="ctit">${g.title}</div>
+        <div class="cdev">${g.dev} · ${g.year}</div>
+        <div class="crat"><span class="cstars">${'★'.repeat(Math.floor(g.rating))}${'☆'.repeat(5-Math.floor(g.rating))}</span><span class="crn">${g.rating} (${g.rev.toLocaleString()})</span></div>
+        <div class="cpr">
+          <div><div class="cprice">₹${g.price.toLocaleString()}</div>${g.orig?`<div class="corig">₹${g.orig.toLocaleString()}</div>`:''}</div>
+          <button class="addc" id="btn-${g.id}" onclick="addToCart(${g.id})">${cart.find(c=>c.id===g.id)?'ADDED ✓':'ADD'}</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ═══════════════ GAME DETAIL MODAL ═══════════════ */
+function openModal(id){
+  const g=GAMES.find(x=>x.id===id);
+  const disc=g.orig?Math.round((1-g.price/g.orig)*100):0;
+  const isAdded=cart.find(c=>c.id===id);
+  document.getElementById('modal-inner').innerHTML=`
+    <div class="mi">
+      <div class="mcw">
+        <img class="mcover" src="${g.img}" alt="${g.title}" onerror="this.style.background='#020408'">
+        <button class="mcls" onclick="closeMod()">✕</button>
+      </div>
+      <div class="mbody">
+        <div class="mtag">${g.genre.toUpperCase()} · ${g.year} · ${g.pub}</div>
+        <div class="mtit">${g.title}</div>
+        <div class="mdev">${g.dev}</div>
+        <div class="mrat">
+          <span class="mstars">${'★'.repeat(Math.floor(g.rating))}${'☆'.repeat(5-Math.floor(g.rating))}</span>
+          <span class="mrn">${g.rating}/5 · ${g.rev.toLocaleString()} reviews</span>
+        </div>
+        <p class="mdesc">${g.desc}</p>
+        ${g.screens.length?`<div class="mscrow">${g.screens.map(s=>`<img class="msc" src="${s}" loading="lazy" onerror="this.style.display='none'">`).join('')}</div>`:''}
+        <div class="mmgrid">
+          <div class="mmi"><div class="mmil">Discs</div><div class="mmiv">💿 ${g.discs}</div></div>
+          <div class="mmi"><div class="mmil">Install Size</div><div class="mmiv">💾 ${g.size}</div></div>
+          <div class="mmi"><div class="mmil">Players</div><div class="mmiv">👥 ${g.players}</div></div>
+          <div class="mmi"><div class="mmil">Publisher</div><div class="mmiv">🏢 ${g.pub}</div></div>
+        </div>
+        <div class="mtags">${g.tags.map(t=>`<span class="mtag2">${t}</span>`).join('')}</div>
+        <div class="mreq">
+          <div class="mreqt">Minimum System Requirements</div>
+          ${Object.entries(g.req).map(([k,v])=>`<div class="mreqr"><span class="mreqk">${k}</span><span class="mreqv">${v}</span></div>`).join('')}
+        </div>
+        <div class="mprrow">
+          <div class="mpr">₹${g.price.toLocaleString()}</div>
+          ${g.orig?`<div class="mpro">₹${g.orig.toLocaleString()}</div><div class="mdisc">${disc}% OFF</div>`:''}
+        </div>
+        <button class="madd${isAdded?' added':''}" id="madd-${g.id}" onclick="addToCart(${g.id})">${isAdded?'✓ ADDED TO CART':'ADD TO CART — ₹'+g.price.toLocaleString()}</button>
+      </div>
+    </div>`;
+  document.getElementById('movl').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeMod(e){
+  if(e&&e.target!==document.getElementById('movl'))return;
+  document.getElementById('movl').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+/* ═══════════════ CART ═══════════════ */
+function addToCart(id){
+  const g=GAMES.find(x=>x.id===id);
+  if(cart.find(c=>c.id===id)){showToast(`${g.title} already in cart!`);return;}
+  cart.push(g);
+  updateCartUI();
+  showToast(`✓ ${g.title} added to cart`);
+  restoreAddedBtns();
+  renderCartItems();
+}
+function removeFromCart(id){
+  cart=cart.filter(c=>c.id!==id);
+  updateCartUI();restoreAddedBtns();renderCartItems();
+}
+function restoreAddedBtns(){
+  GAMES.forEach(g=>{
+    const b=document.getElementById('btn-'+g.id);
+    if(b){b.textContent=cart.find(c=>c.id===g.id)?'ADDED ✓':'ADD';b.classList.toggle('added',!!cart.find(c=>c.id===g.id));}
+    const mb=document.getElementById('madd-'+g.id);
+    if(mb){mb.textContent=cart.find(c=>c.id===g.id)?'✓ ADDED TO CART':'ADD TO CART — ₹'+g.price.toLocaleString();mb.classList.toggle('added',!!cart.find(c=>c.id===g.id));}
+  });
+}
+function updateCartUI(){
+  const n=cart.length,el=document.getElementById('cn');
+  el.textContent=n;el.style.display=n?'flex':'none';
+  document.getElementById('ctv').textContent='₹'+cart.reduce((s,i)=>s+i.price,0).toLocaleString();
+}
+function renderCartItems(){
+  const el=document.getElementById('cart-items');
+  if(!cart.length){el.innerHTML=`<div class="ce"><span class="ce-i">💿</span><p>YOUR CART IS EMPTY</p></div>`;return;}
+  el.innerHTML=cart.map(g=>`
+    <div class="ci">
+      <img class="ci-img" src="${g.img}" alt="${g.title}" onerror="this.style.background='#020408'">
+      <div class="ci-info">
+        <div class="ci-t">${g.title}</div>
+        <div class="ci-g">${g.genre.toUpperCase()} · PC CD</div>
+        <div class="ci-p">₹${g.price.toLocaleString()}</div>
+      </div>
+      <button class="ri" onclick="removeFromCart(${g.id})">✕</button>
+    </div>`).join('');
+}
+function openCart(){document.getElementById('cart-d').classList.add('open');document.getElementById('covl').classList.add('open');renderCartItems();}
+function closeCart(){document.getElementById('cart-d').classList.remove('open');document.getElementById('covl').classList.remove('open');}
+
+/* ═══════════════ PAYMENT MODAL ═══════════════ */
+function openPay(){
+  if(!cart.length){showToast('Your cart is empty!');return;}
+  closeCart();
+  payStep=1;payMethod='upi';selBank='';
+  renderPay();
+  document.getElementById('pmovl').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closePay(e){
+  if(e&&e.target!==document.getElementById('pmovl'))return;
+  document.getElementById('pmovl').classList.remove('open');
+  document.body.style.overflow='';
+}
+function progHTML(cur){
+  const steps=[['1','Summary'],['2','Address'],['3','Payment'],['4','Review']];
+  return `<div class="psteps">${steps.map(([n,l],i)=>{
+    const s=i+1;
+    const cls=s<cur?'done':s===cur?'cur':'';
+    return `<div class="psi"><div class="psin ${cls}">${s<cur?'✓':n}</div><div class="psil">${l}</div></div>`;
+  }).join('')}</div>`;
+}
+function summHTML(){
+  const sub=cart.reduce((s,i)=>s+i.price,0);
+  const ship=sub>=999?0:99;const grand=sub+ship;
+  return `<div class="osumm"><div class="ostit">Order Summary</div>${cart.map(g=>`<div class="oitem"><span class="oin">${g.title}</span><span class="oip">₹${g.price.toLocaleString()}</span></div>`).join('')}<div class="odiv"></div><div class="oitem"><span class="oin" style="color:var(--tx2)">Subtotal</span><span class="oip">₹${sub.toLocaleString()}</span></div><div class="oitem"><span class="oin" style="color:var(--tx2)">Shipping</span><span class="oip" style="${ship===0?'color:#00ff88':''}">${ship===0?'FREE':'₹'+ship}</span></div><div class="odiv"></div><div class="otr"><span class="otl">Total</span><span class="otv">₹${grand.toLocaleString()}</span></div></div>`;
+}
+function renderPay(){
+  const pb=document.getElementById('pb');
+  const sub=cart.reduce((s,i)=>s+i.price,0);
+  const ship=sub>=999?0:99;const grand=sub+ship;
+  if(payStep===1){
+    pb.innerHTML=progHTML(1)+summHTML()+`<p class="fhint" style="margin-bottom:.75rem">✅ Free shipping on orders above ₹999 · 7-day returns · Genuine physical discs</p><button class="paynow" onclick="payStep=2;renderPay()">CONTINUE TO ADDRESS →</button><div class="secbdg">🔒 Secure Checkout · PCI DSS Compliant</div>`;
+  } else if(payStep===2){
+    pb.innerHTML=progHTML(2)+`<div class="fg"><label class="fl">Full Name *</label><input class="fin" id="pn" placeholder="Rahul Sharma"></div><div class="fg"><label class="fl">Mobile Number *</label><input class="fin" id="pp" placeholder="+91 98765 43210"></div><div class="fg"><label class="fl">Address Line 1 *</label><input class="fin" id="pa1" placeholder="House No., Street Name"></div><div class="fg"><label class="fl">Address Line 2</label><input class="fin" id="pa2" placeholder="Colony, Landmark (optional)"></div><div class="fr"><div class="fg"><label class="fl">City *</label><input class="fin" id="pc" placeholder="Mumbai"></div><div class="fg"><label class="fl">PIN Code *</label><input class="fin" id="ppin" placeholder="400001" maxlength="6"></div></div><div class="fg"><label class="fl">State *</label><select class="fin" id="pst"><option value="">Select State</option>${['Andhra Pradesh','Assam','Bihar','Delhi','Goa','Gujarat','Haryana','Jharkhand','Karnataka','Kerala','Madhya Pradesh','Maharashtra','Odisha','Punjab','Rajasthan','Tamil Nadu','Telangana','Uttar Pradesh','West Bengal'].map(s=>`<option>${s}</option>`).join('')}</select></div><div style="display:flex;gap:.75rem;margin-top:.5rem"><button class="paynow" style="background:transparent;border:1px solid var(--br);color:var(--tx2);clip-path:none;flex:1;font-size:1rem;padding:14px" onclick="payStep=1;renderPay()">← BACK</button><button class="paynow" style="flex:2" onclick="valAddr()">CONTINUE →</button></div>`;
+  } else if(payStep===3){
+    pb.innerHTML=progHTML(3)+`<p style="font-family:'Share Tech Mono',monospace;font-size:.65rem;letter-spacing:2px;color:var(--tx2);margin-bottom:1.2rem">SELECT PAYMENT METHOD</p><div class="pmg"><div class="pm${payMethod==='upi'?' sel':''}" onclick="setPM('upi')"><span class="pmi">📱</span><div class="pmn">UPI</div><div class="pmd">GPay · PhonePe · Paytm</div></div><div class="pm${payMethod==='card'?' sel':''}" onclick="setPM('card')"><span class="pmi">💳</span><div class="pmn">Card</div><div class="pmd">Debit / Credit / EMI</div></div><div class="pm${payMethod==='nb'?' sel':''}" onclick="setPM('nb')"><span class="pmi">🏦</span><div class="pmn">Net Banking</div><div class="pmd">All major banks</div></div><div class="pm${payMethod==='cod'?' sel':''}" onclick="setPM('cod')"><span class="pmi">💵</span><div class="pmn">Cash on Delivery</div><div class="pmd">Pay when received</div></div></div><div id="pmf"></div><div style="display:flex;gap:.75rem"><button class="paynow" style="background:transparent;border:1px solid var(--br);color:var(--tx2);clip-path:none;flex:1;font-size:1rem;padding:14px" onclick="payStep=2;renderPay()">← BACK</button><button class="paynow" style="flex:2" onclick="payStep=4;renderPay()">REVIEW ORDER →</button></div><div class="secbdg">🔒 256-bit SSL Encrypted · PCI DSS Compliant</div>`;
+    renderPMF();
+  } else if(payStep===4){
+    const nm=document.getElementById('pn')?.value||'Customer';
+    const addr=`${document.getElementById('pa1')?.value||''}, ${document.getElementById('pc')?.value||''} ${document.getElementById('ppin')?.value||''}`;
+    const pml={upi:'UPI / QR Code',card:'Debit / Credit Card',nb:'Net Banking',cod:'Cash on Delivery'};
+    pb.innerHTML=progHTML(4)+summHTML()+`<div class="osumm" style="margin-top:1rem"><div class="ostit">Delivery & Payment Details</div><div class="oitem"><span class="oin">Deliver To</span><span class="oip" style="font-size:.9rem">${nm}</span></div><div class="oitem"><span class="oin">Address</span><span style="font-size:.8rem;color:var(--tx);max-width:55%;text-align:right">${addr}</span></div><div class="oitem"><span class="oin">Payment</span><span class="oip" style="font-size:.9rem">${pml[payMethod]}</span></div><div class="oitem"><span class="oin">Est. Delivery</span><span style="color:#00ff88;font-weight:700">3-5 Business Days</span></div></div><div style="display:flex;gap:.75rem;margin-top:1rem"><button class="paynow" style="background:transparent;border:1px solid var(--br);color:var(--tx2);clip-path:none;flex:1;font-size:1rem;padding:14px" onclick="payStep=3;renderPay()">← BACK</button><button class="paynow" style="flex:2" onclick="placeOrd()">PLACE ORDER ₹${grand.toLocaleString()} →</button></div><div class="secbdg">🔒 Secure Checkout · Free Returns within 7 days</div>`;
+  } else if(payStep===5){
+    const oid='NXG'+Date.now().toString(36).toUpperCase();
+    const pml={upi:'UPI Payment',card:'Card Payment',nb:'Net Banking',cod:'Cash on Delivery'};
+    pb.innerHTML=`<div class="succ"><span class="sico2">🎉</span><div class="stit">ORDER PLACED!</div><p class="ssub">Your games are confirmed and will be packed and shipped within 48 hours. A tracking link will be sent to your mobile.</p><div class="sdet"><div class="sdr"><span class="sdl">Order ID</span><span class="sdv">${oid}</span></div><div class="sdr"><span class="sdl">Items</span><span class="sdv">${cart.length} PC Game CD${cart.length>1?'s':''}</span></div><div class="sdr"><span class="sdl">Total Paid</span><span class="sdv">₹${grand.toLocaleString()}</span></div><div class="sdr"><span class="sdl">Payment</span><span class="sdv">${pml[payMethod]}</span></div><div class="sdr"><span class="sdl">Est. Delivery</span><span class="sdv" style="color:#00ff88">3-5 Business Days</span></div></div><button class="paynow" onclick="closePay();clearCart()">CONTINUE SHOPPING</button></div>`;
+  }
+}
+function renderPMF(){
+  const el=document.getElementById('pmf');if(!el)return;
+  if(payMethod==='upi'){el.innerHTML=`<div class="fg" style="margin-bottom:.75rem"><label class="fl">UPI ID</label><input class="fin" id="pupi" placeholder="yourname@okaxis"></div><div class="upiapps">${[['📱','GPay'],['💜','PhonePe'],['💛','Paytm'],['🔵','BHIM'],['🟠','Amazon Pay']].map(([ic,n])=>`<div class="uapp" onclick="document.getElementById('pupi').value='';this.classList.toggle('sel')">${ic} ${n}</div>`).join('')}</div><p class="fhint" style="margin-top:.75rem">Enter your UPI ID or tap an app to receive a payment request on your phone</p>`;}
+  else if(payMethod==='card'){el.innerHTML=`<div class="fg"><label class="fl">Card Number</label><input class="fin" id="pcard" placeholder="1234 5678 9012 3456" maxlength="19" oninput="this.value=this.value.replace(/[^0-9]/g,'').replace(/(.{4})/g,'$1 ').trim()"></div><div class="fg"><label class="fl">Cardholder Name</label><input class="fin" id="pcn" placeholder="RAHUL SHARMA"></div><div class="fr"><div class="fg"><label class="fl">Expiry Date</label><input class="fin" id="pexp" placeholder="MM/YY" maxlength="5"></div><div class="fg"><label class="fl">CVV</label><input class="fin" id="pcvv" placeholder="•••" maxlength="4" type="password"></div></div><p class="fhint">EMI available on orders above ₹2,000 — 3, 6, 12 month options · No-cost EMI on select cards</p>`;}
+  else if(payMethod==='nb'){el.innerHTML=`<p class="fhint" style="margin-bottom:.75rem">Select your bank:</p><div class="bkg">${['SBI','HDFC','ICICI','Axis Bank','Kotak','PNB','Canara','IDFC FIRST','Yes Bank','IndusInd','Bank of Baroda','UCO Bank'].map(b=>`<div class="bkb${selBank===b?' sel':''}" onclick="selBank='${b}';renderPMF()">${b}</div>`).join('')}</div>`;}
+  else if(payMethod==='cod'){el.innerHTML=`<div class="codbox"><div class="codtit">💵 Cash on Delivery</div><p>Pay in cash when your order is delivered. Our delivery partner will collect the exact amount. COD available on orders under ₹5,000.</p></div><p class="fhint">COD orders may take 1 additional business day to dispatch.</p>`;}
+}
+function setPM(m){payMethod=m;renderPay();}
+function valAddr(){
+  const n=document.getElementById('pn')?.value,a=document.getElementById('pa1')?.value,c=document.getElementById('pc')?.value,p=document.getElementById('ppin')?.value;
+  if(!n||!a||!c||!p||p.length<6){showToast('Please fill all required fields');return;}
+  payStep=3;renderPay();
+}
+function placeOrd(){payStep=5;renderPay();}
+function clearCart(){
+  cart=[];
+  GAMES.forEach(g=>{
+    ['btn-','madd-'].forEach(pre=>{const b=document.getElementById(pre+g.id);if(b){b.textContent=pre==='btn-'?'ADD':'ADD TO CART — ₹'+g.price.toLocaleString();b.classList.remove('added');}});
+  });
+  updateCartUI();renderCartItems();
+}
+
+/* ═══════════════ PAGE TRANSITIONS ═══════════════ */
+function showPage(name){
+  if(name===curPage||transitioning)return;
+  transitioning=true;
+  const from=document.getElementById('page-'+curPage);
+  const to=document.getElementById('page-'+name);
+  const fwd=(name==='genre');
+  const ov=document.getElementById('tOvl');
+  from.classList.remove('active');from.classList.add(fwd?'pout-l':'pout-r');
+  ov.style.background=fwd?'var(--a)':'var(--a2)';ov.className='wi';
+  setTimeout(()=>{
+    from.classList.remove(fwd?'pout-l':'pout-r');from.style.display='none';
+    to.style.display='block';to.classList.remove('active');to.classList.add(fwd?'pin-r':'pin-l');
+    window.scrollTo({top:0});ov.className='wo';
+    setTimeout(()=>{to.classList.remove(fwd?'pin-r':'pin-l');to.classList.add('active');ov.className='';curPage=name;transitioning=false;},340);
+  },290);
+  document.querySelectorAll('nav ul a').forEach(a=>a.classList.remove('active'));
+  if(name==='home')document.getElementById('nav-home')?.classList.add('active');
+}
+function goHome(){if(curPage==='genre')showPage('home');else window.scrollTo({top:0,behavior:'smooth'});}
+
+/* ═══════════════ UTILS ═══════════════ */
+let tt;
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2800);}
+function toggleMob(){document.getElementById('mobn').classList.toggle('open');}
+
+/* ═══════════════ AUTH SYSTEM ═══════════════ */
+// Simulated user store (in production this talks to your Flask backend)
+const USERS_DB = JSON.parse(localStorage.getItem('nexus_users') || '[]');
+let currentUser = JSON.parse(localStorage.getItem('nexus_current_user') || 'null');
+
+const OAUTH_PROFILES = {
+  google: [
+    {name:'Arjun Mehta',email:'arjun.mehta@gmail.com',avatar:'https://api.dicebear.com/7.x/avataaars/svg?seed=arjun',color:'#4285F4'},
+    {name:'Priya Singh',email:'priya.singh@gmail.com',avatar:'https://api.dicebear.com/7.x/avataaars/svg?seed=priya',color:'#34A853'},
+    {name:'Rahul Sharma',email:'rahul.sharma@gmail.com',avatar:'https://api.dicebear.com/7.x/avataaars/svg?seed=rahul',color:'#EA4335'},
+  ],
+  outlook: [
+    {name:'Vikram Nair',email:'vikram.nair@outlook.com',avatar:'https://api.dicebear.com/7.x/avataaars/svg?seed=vikram',color:'#0078D4'},
+    {name:'Anjali Patel',email:'anjali.patel@hotmail.com',avatar:'https://api.dicebear.com/7.x/avataaars/svg?seed=anjali',color:'#00B4F0'},
+  ],
+  github: [
+    {name:'Dev Kumar',email:'devkumar@github.com',avatar:'https://api.dicebear.com/7.x/avataaars/svg?seed=devkumar',color:'#333'},
+    {name:'Sneha Reddy',email:'snehareddy@github.com',avatar:'https://api.dicebear.com/7.x/avataaars/svg?seed=sneha',color:'#555'},
+  ]
+};
+
+function openAuth(tab='login') {
+  switchTab(tab);
+  document.getElementById('auth-ovl').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  spawnParticles();
+  // Clear fields
+  ['li-email','li-pw','rg-name','rg-email','rg-pw'].forEach(id => {
+    const el = document.getElementById(id); if(el) el.value = '';
+  });
+  hideAuthErr();
+}
+
+function closeAuth() {
+  document.getElementById('auth-ovl').classList.remove('open');
+  document.getElementById('oauth-loading-screen').style.display = 'none';
+  document.getElementById('auth-login-body').style.display = 'block';
+  document.getElementById('auth-register-body').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function switchTab(tab) {
+  document.getElementById('tab-login').classList.toggle('active', tab==='login');
+  document.getElementById('tab-register').classList.toggle('active', tab==='register');
+  document.getElementById('auth-login-body').style.display = tab==='login' ? 'block' : 'none';
+  document.getElementById('auth-register-body').style.display = tab==='register' ? 'block' : 'none';
+  document.getElementById('oauth-loading-screen').style.display = 'none';
+  hideAuthErr();
+}
+
+function hideAuthErr() {
+  ['login-err','reg-err'].forEach(id => {
+    const el = document.getElementById(id); if(el){el.classList.remove('show');el.textContent='';}
+  });
+}
+
+function showAuthErr(id, msg) {
+  const el = document.getElementById(id);
+  if(el) { el.textContent = msg; el.classList.add('show'); }
+}
+
+// ── OAUTH LOGIN ──
+function oauthLogin(provider) {
+  const profiles = OAUTH_PROFILES[provider];
+  const profile  = profiles[Math.floor(Math.random() * profiles.length)];
+  const names    = {google:'Google',outlook:'Microsoft',github:'GitHub'};
+
+  // Show loading screen
+  document.getElementById('auth-login-body').style.display = 'none';
+  document.getElementById('auth-register-body').style.display = 'none';
+  document.getElementById('oauth-loading-screen').style.display = 'block';
+  document.getElementById('oauth-msg').textContent = `Connecting to ${names[provider]}...`;
+
+  setTimeout(() => {
+    document.getElementById('oauth-msg').textContent = 'Verifying your account...';
+    setTimeout(() => {
+      const user = {
+        id: 'oauth-' + Date.now(),
+        name: profile.name,
+        email: profile.email,
+        avatar: profile.avatar,
+        color: profile.color,
+        provider,
+        initials: profile.name.split(' ').map(n=>n[0]).join('').toUpperCase()
+      };
+      completeLogin(user);
+    }, 900);
+  }, 1000);
+}
+
+// ── EMAIL LOGIN ──
+function doLogin() {
+  const email = (document.getElementById('li-email')?.value || '').trim().toLowerCase();
+  const pw    = document.getElementById('li-pw')?.value || '';
+  if(!email || !pw) { showAuthErr('login-err','Please enter your email and password.'); return; }
+
+  const users = JSON.parse(localStorage.getItem('nexus_users') || '[]');
+  const found = users.find(u => u.email === email && u.pw === btoa(pw));
+  if(!found) { showAuthErr('login-err','Invalid email or password. Try signing up or use a social login.'); return; }
+
+  const user = {
+    id: found.id, name: found.name, email: found.email,
+    initials: found.name.split(' ').map(n=>n[0]).join('').toUpperCase(),
+    color: '#00e5ff', provider: 'email'
+  };
+  completeLogin(user);
+}
+
+// ── EMAIL REGISTER ──
+function doRegister() {
+  const name  = (document.getElementById('rg-name')?.value  || '').trim();
+  const email = (document.getElementById('rg-email')?.value || '').trim().toLowerCase();
+  const pw    = document.getElementById('rg-pw')?.value || '';
+
+  if(!name)  { showAuthErr('reg-err','Please enter your name.'); return; }
+  if(!email || !email.includes('@')) { showAuthErr('reg-err','Please enter a valid email address.'); return; }
+  if(pw.length < 6) { showAuthErr('reg-err','Password must be at least 6 characters.'); return; }
+
+  const users = JSON.parse(localStorage.getItem('nexus_users') || '[]');
+  if(users.find(u => u.email === email)) { showAuthErr('reg-err','This email is already registered. Try signing in.'); return; }
+
+  const newUser = { id:'local-'+Date.now(), name, email, pw: btoa(pw) };
+  users.push(newUser);
+  localStorage.setItem('nexus_users', JSON.stringify(users));
+
+  const user = {
+    id: newUser.id, name, email,
+    initials: name.split(' ').map(n=>n[0]).join('').toUpperCase(),
+    color: '#7b2fff', provider: 'email'
+  };
+  completeLogin(user);
+}
+
+// ── COMPLETE LOGIN ──
+function completeLogin(user) {
+  currentUser = user;
+  localStorage.setItem('nexus_current_user', JSON.stringify(user));
+  closeAuth();
+  updateNavAuth();
+  showWelcomeToast(user);
+}
+
+// ── LOGOUT ──
+function logout() {
+  currentUser = null;
+  localStorage.removeItem('nexus_current_user');
+  updateNavAuth();
+  showToast('Signed out. See you next time! 👋');
+}
+
+// ── UPDATE NAV ──
+function updateNavAuth() {
+  const area = document.getElementById('nav-auth-area');
+  if(!area) return;
+  if(currentUser) {
+    const avatarHTML = currentUser.avatar
+      ? `<img src="${currentUser.avatar}" style="width:28px;height:28px;border-radius:50%;object-fit:cover" onerror="this.outerHTML='<div class=\\'user-av\\' style=\\'background:${currentUser.color || '#00e5ff'}\\'>${currentUser.initials}</div>'">`
+      : `<div class="user-av" style="background:${currentUser.color||'#00e5ff'}">${currentUser.initials}</div>`;
+    const providerIcon = {google:'<svg width="12" height="12" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>',outlook:'🔷',github:'⚫',email:'✉️'}[currentUser.provider||'email'];
+    area.innerHTML = `
+      <div class="user-pill" tabindex="0">
+        ${avatarHTML}
+        <span class="user-name">${currentUser.name.split(' ')[0]}</span>
+        <span style="font-size:.6rem;color:var(--tx2);margin-left:2px">▾</span>
+        <div class="user-menu">
+          <div class="user-menu-item" style="pointer-events:none;opacity:.6;font-size:.6rem">${currentUser.email}</div>
+          <div class="user-menu-item" onclick="openProfile()">👤 My Profile</div>
+          <div class="user-menu-item" onclick="showToast('Orders coming soon!')">📦 My Orders</div>
+          <div class="user-menu-item" onclick="showToast('Wishlist coming soon!')">❤️ Wishlist</div>
+          <div class="user-menu-item logout" onclick="logout()">⏻ Sign Out</div>
+        </div>
+      </div>`;
+  } else {
+    area.innerHTML = `<button class="login-btn" onclick="openAuth()">SIGN IN</button>`;
+  }
+}
+
+// ── WELCOME TOAST ──
+function showWelcomeToast(user) {
+  const wt = document.getElementById('welcome-toast');
+  const av = document.getElementById('wt-av');
+  const nm = document.getElementById('wt-name');
+  if(!wt||!av||!nm) return;
+  nm.textContent = `Welcome, ${user.name.split(' ')[0]}!`;
+  if(user.avatar) {
+    av.innerHTML = `<img src="${user.avatar}" style="width:36px;height:36px;border-radius:50%;object-fit:cover" onerror="this.outerHTML='${user.initials}'">`;
+  } else {
+    av.style.background = user.color || '#00e5ff';
+    av.textContent = user.initials;
+  }
+  wt.classList.add('show');
+  setTimeout(() => wt.classList.remove('show'), 3500);
+}
+
+// ── FLOATING PARTICLES ──
+function spawnParticles() {
+  const container = document.getElementById('auth-particles');
+  if(!container) return;
+  container.innerHTML = '';
+  const colors = ['#00e5ff','#ff2d78','#7b2fff','#ffb800'];
+  for(let i=0;i<18;i++) {
+    const p = document.createElement('div');
+    p.className = 'auth-particle';
+    const size = 4 + Math.random()*8;
+    p.style.cssText = `
+      width:${size}px;height:${size}px;
+      left:${Math.random()*100}%;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      animation-duration:${4+Math.random()*6}s;
+      animation-delay:${Math.random()*4}s;
+      filter:blur(1px)
+    `;
+    container.appendChild(p);
+  }
+}
+
+init();
+</script>
+</body>
+</html>
+
